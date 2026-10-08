@@ -28,7 +28,7 @@
 
     .contenedor {
         width: 100%;
-        max-width: 1800px;
+        max-width: 1700px;
         margin: auto;
     }
 
@@ -128,7 +128,7 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1550px;
+        min-width: 1300px;
     }
 
     thead {
@@ -235,13 +235,12 @@
 
     </div>
 
-
     <div class="controles">
 
         <input
             type="text"
             id="busqueda"
-            placeholder="Buscar por cédula, técnica, administración, establecimiento, alimento, microorganismo..."
+            placeholder="Buscar por cédula, técnica, administración, alimento, microorganismo..."
         >
 
         <button
@@ -267,9 +266,7 @@
 
     </div>
 
-
     <div id="mensaje"></div>
-
 
     <div class="tabla-contenedor">
 
@@ -287,9 +284,8 @@
                 <tr>
 
                     <th>ALERTA</th>
-                    <th>FECHA VISITA</th>
+                    <th>FECHA MUESTRA</th>
                     <th>ADMINISTRACIÓN ZONAL</th>
-                    <th>ESTABLECIMIENTO</th>
                     <th>CÉDULA</th>
                     <th>N.º PAPELETA</th>
                     <th>TIPO DE VISITA</th>
@@ -298,7 +294,6 @@
                     <th>NIVEL DE RIESGO</th>
                     <th>TÉCNICA</th>
                     <th>CUMPLIMIENTO</th>
-                    <th>OBSERVACIONES</th>
 
                 </tr>
 
@@ -309,7 +304,6 @@
         </table>
 
     </div>
-
 
     <div
         class="ultimaActualizacion"
@@ -322,7 +316,7 @@
 <script>
 
 /* ============================================================
-   SEGURIDAD / VERIFICACIÓN DE SESIÓN
+   VERIFICAR SESIÓN
    ============================================================ */
 
 const acceso =
@@ -355,7 +349,7 @@ function cerrarSesion() {
 
 
 /* ============================================================
-   CONFIGURACIÓN GENERAL
+   CONFIGURACIÓN
    ============================================================ */
 
 const ITEM_ID =
@@ -381,10 +375,13 @@ let datosFiltrados = [];
 
 
 /* ============================================================
-   FUNCIÓN AUXILIAR
+   BUSCAR CAMPO SIN IMPORTAR MAYÚSCULAS
    ============================================================ */
 
-function valorCampo(objeto, posiblesNombres) {
+function valorCampo(
+    objeto,
+    posiblesNombres
+) {
 
     if (!objeto) {
         return "";
@@ -500,7 +497,7 @@ function ocultarMensaje() {
 
 
 /* ============================================================
-   OBTENER URL DEL FEATURE SERVICE
+   OBTENER URL FEATURE SERVICE
    ============================================================ */
 
 async function obtenerURLServicio() {
@@ -542,7 +539,7 @@ async function obtenerURLServicio() {
 
 
 /* ============================================================
-   ESTRUCTURA DEL SERVICIO
+   ESTRUCTURA SERVICIO
    ============================================================ */
 
 async function obtenerEstructuraServicio(
@@ -701,10 +698,6 @@ async function consultarArcGIS(
         datos.error
     ) {
 
-        console.error(
-            datos.error
-        );
-
         throw new Error(
             datos.error.message ||
             "Error en la consulta de ArcGIS."
@@ -729,7 +722,8 @@ async function obtenerNoCumple(
 
     let offset = 0;
 
-    const cantidad = 1000;
+    const cantidad =
+        1000;
 
     while (true) {
 
@@ -788,7 +782,7 @@ async function obtenerNoCumple(
 
 
 /* ============================================================
-   CAMPOS TABLA
+   CAMPOS DE LA TABLA
    ============================================================ */
 
 async function obtenerCamposTabla(
@@ -967,61 +961,7 @@ async function obtenerPadres(
 
 
 /* ============================================================
-   ESTABLECIMIENTO
-   ============================================================ */
-
-function obtenerEstablecimiento(
-    padre
-) {
-
-    const posiblesCampos = [
-
-        "CDI_Quito_wawas",
-
-        "UEM",
-
-        "CMEI",
-
-        "Mercados_y_Ferias",
-
-        "CETI_PETI",
-
-        "centro_patronato",
-
-        "NOMBRE"
-
-    ];
-
-    for (
-        const campo
-        of posiblesCampos
-    ) {
-
-        const valor =
-            valorCampo(
-                padre,
-                [campo]
-            );
-
-        if (
-            valor !== "" &&
-            valor !== null &&
-            valor !== undefined
-        ) {
-
-            return valor;
-
-        }
-
-    }
-
-    return "";
-
-}
-
-
-/* ============================================================
-   UNIR REPEAT + PADRE
+   CONSTRUIR DATOS
    ============================================================ */
 
 function construirDatosFinales(
@@ -1058,14 +998,14 @@ function construirDatosFinales(
             alerta:
                 "REQUIERE SEGUIMIENTO",
 
-            fecha:
+            fechaMuestra:
                 fechaEspanol(
                     valorCampo(
-                        padre,
+                        repetido,
                         [
-                            "fecha_visita",
-                            "Fecha_visita",
-                            "FECHA_VISITA"
+                            "fecha_muestra",
+                            "FECHA_MUESTRA",
+                            "Fecha_muestra"
                         ]
                     )
                 ),
@@ -1078,11 +1018,6 @@ function construirDatosFinales(
                         "ADMINISTRACION_ZONAL",
                         "administracion_zonal"
                     ]
-                ),
-
-            establecimiento:
-                obtenerEstablecimiento(
-                    padre
                 ),
 
             cedula:
@@ -1158,15 +1093,6 @@ function construirDatosFinales(
                         "CUMPLIMIENTO",
                         "cumplimiento"
                     ]
-                ),
-
-            observaciones:
-                valorCampo(
-                    repetido,
-                    [
-                        "OBSERVACIONES",
-                        "observaciones"
-                    ]
                 )
 
         });
@@ -1179,7 +1105,7 @@ function construirDatosFinales(
 
 
 /* ============================================================
-   TABLA
+   DIBUJAR TABLA
    ============================================================ */
 
 function dibujarTabla(
@@ -1213,15 +1139,11 @@ function dibujarTabla(
             </td>
 
             <td>
-                ${escaparHTML(registro.fecha)}
+                ${escaparHTML(registro.fechaMuestra)}
             </td>
 
             <td>
                 ${escaparHTML(registro.administracion)}
-            </td>
-
-            <td>
-                ${escaparHTML(registro.establecimiento)}
             </td>
 
             <td>
@@ -1256,10 +1178,6 @@ function dibujarTabla(
                 <span class="estado-alerta">
                     ${escaparHTML(registro.cumplimiento)}
                 </span>
-            </td>
-
-            <td>
-                ${escaparHTML(registro.observaciones)}
             </td>
 
         `;
@@ -1406,11 +1324,9 @@ function exportarCSV() {
 
         "ALERTA",
 
-        "FECHA VISITA",
+        "FECHA MUESTRA",
 
         "ADMINISTRACIÓN ZONAL",
-
-        "ESTABLECIMIENTO",
 
         "CÉDULA",
 
@@ -1426,9 +1342,7 @@ function exportarCSV() {
 
         "TÉCNICA",
 
-        "CUMPLIMIENTO",
-
-        "OBSERVACIONES"
+        "CUMPLIMIENTO"
 
     ];
 
@@ -1438,11 +1352,9 @@ function exportarCSV() {
 
                 x.alerta,
 
-                x.fecha,
+                x.fechaMuestra,
 
                 x.administracion,
-
-                x.establecimiento,
 
                 x.cedula,
 
@@ -1458,9 +1370,7 @@ function exportarCSV() {
 
                 x.tecnica,
 
-                x.cumplimiento,
-
-                x.observaciones
+                x.cumplimiento
 
             ]
         );
@@ -1714,7 +1624,7 @@ async function cargarDatos() {
 
 
 /* ============================================================
-   EJECUTAR AL ABRIR
+   EJECUTAR
    ============================================================ */
 
 window.addEventListener(

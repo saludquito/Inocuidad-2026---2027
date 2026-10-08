@@ -1,0 +1,1739 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Alertas de Riesgo Microbiológico</title>
+
+<style>
+
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 20px;
+        font-family: Arial, Helvetica, sans-serif;
+        background: #f4f6f8;
+        color: #263238;
+    }
+
+    .contenedor {
+        width: 100%;
+        max-width: 1800px;
+        margin: auto;
+    }
+
+    h1 {
+        margin: 0 0 5px 0;
+        font-size: 26px;
+        color: #1f4e78;
+    }
+
+    .subtitulo {
+        color: #607d8b;
+        margin-bottom: 20px;
+    }
+
+    .tarjetas {
+        display: grid;
+        grid-template-columns:
+            repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .tarjeta {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .tarjeta.alerta {
+        border-left: 6px solid #c62828;
+    }
+
+    .tarjeta .numero {
+        font-size: 38px;
+        font-weight: bold;
+        color: #c62828;
+    }
+
+    .tarjeta .titulo {
+        margin-top: 5px;
+        font-size: 14px;
+        font-weight: bold;
+        color: #455a64;
+    }
+
+    .controles {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 15px;
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .controles input {
+        flex: 1;
+        min-width: 280px;
+        padding: 10px;
+        border: 1px solid #b0bec5;
+        border-radius: 6px;
+        font-size: 14px;
+    }
+
+    button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    #btnActualizar {
+        background: #1976d2;
+        color: white;
+    }
+
+    #btnCSV {
+        background: #2e7d32;
+        color: white;
+    }
+
+    #btnSalir {
+        background: #616161;
+        color: white;
+    }
+
+    .tabla-contenedor {
+        overflow-x: auto;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1550px;
+    }
+
+    thead {
+        background: #1f4e78;
+        color: white;
+    }
+
+    th,
+    td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+        font-size: 13px;
+    }
+
+    th {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    tbody tr:hover {
+        background: #f5f5f5;
+    }
+
+    .estado-alerta {
+        display: inline-block;
+        background: #ffebee;
+        color: #b71c1c;
+        border: 1px solid #ef9a9a;
+        border-radius: 20px;
+        padding: 5px 10px;
+        font-weight: bold;
+        white-space: nowrap;
+    }
+
+    .riesgo-alto {
+        font-weight: bold;
+        color: #b71c1c;
+    }
+
+    #mensaje {
+        margin: 15px 0;
+        padding: 12px;
+        border-radius: 6px;
+        display: none;
+    }
+
+    .error {
+        background: #ffebee;
+        color: #b71c1c;
+        border: 1px solid #ef9a9a;
+    }
+
+    .ok {
+        background: #e8f5e9;
+        color: #1b5e20;
+        border: 1px solid #a5d6a7;
+    }
+
+    #cargando {
+        padding: 30px;
+        text-align: center;
+        font-weight: bold;
+        color: #546e7a;
+    }
+
+    .ultimaActualizacion {
+        font-size: 12px;
+        color: #78909c;
+        margin-top: 10px;
+    }
+
+</style>
+
+</head>
+
+<body>
+
+<div class="contenedor">
+
+    <h1>🚨 Alertas de Riesgo Microbiológico</h1>
+
+    <div class="subtitulo">
+        Registros microbiológicos con resultado NO CUMPLE
+    </div>
+
+    <div class="tarjetas">
+
+        <div class="tarjeta alerta">
+
+            <div
+                class="numero"
+                id="totalAlertas"
+            >
+                0
+            </div>
+
+            <div class="titulo">
+                MUESTRAS NO CUMPLE
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="controles">
+
+        <input
+            type="text"
+            id="busqueda"
+            placeholder="Buscar por cédula, técnica, administración, establecimiento, alimento, microorganismo..."
+        >
+
+        <button
+            id="btnActualizar"
+            onclick="cargarDatos()"
+        >
+            ↻ Actualizar
+        </button>
+
+        <button
+            id="btnCSV"
+            onclick="exportarCSV()"
+        >
+            ⬇ Descargar CSV
+        </button>
+
+        <button
+            id="btnSalir"
+            onclick="cerrarSesion()"
+        >
+            Salir
+        </button>
+
+    </div>
+
+
+    <div id="mensaje"></div>
+
+
+    <div class="tabla-contenedor">
+
+        <div id="cargando">
+            Cargando alertas...
+        </div>
+
+        <table
+            id="tablaAlertas"
+            style="display:none"
+        >
+
+            <thead>
+
+                <tr>
+
+                    <th>ALERTA</th>
+                    <th>FECHA VISITA</th>
+                    <th>ADMINISTRACIÓN ZONAL</th>
+                    <th>ESTABLECIMIENTO</th>
+                    <th>CÉDULA</th>
+                    <th>N.º PAPELETA</th>
+                    <th>TIPO DE VISITA</th>
+                    <th>ALIMENTO</th>
+                    <th>MICROORGANISMO</th>
+                    <th>NIVEL DE RIESGO</th>
+                    <th>TÉCNICA</th>
+                    <th>CUMPLIMIENTO</th>
+                    <th>OBSERVACIONES</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="cuerpoTabla"></tbody>
+
+        </table>
+
+    </div>
+
+
+    <div
+        class="ultimaActualizacion"
+        id="ultimaActualizacion"
+    ></div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   SEGURIDAD / VERIFICACIÓN DE SESIÓN
+   ============================================================ */
+
+const acceso =
+    sessionStorage.getItem(
+        "accesoInocuidad"
+    );
+
+if (acceso !== "autorizado") {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* ============================================================
+   CERRAR SESIÓN
+   ============================================================ */
+
+function cerrarSesion() {
+
+    sessionStorage.removeItem(
+        "accesoInocuidad"
+    );
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* ============================================================
+   CONFIGURACIÓN GENERAL
+   ============================================================ */
+
+const ITEM_ID =
+    "040efa0fbe404ee18731d06960599c91";
+
+const NOMBRE_TABLA_REPEAT =
+    "group_lf9ni00";
+
+const CAMPO_CUMPLIMIENTO =
+    "CUMPLIMIENTO";
+
+const VALOR_ALERTA =
+    "NO CUMPLE";
+
+
+/* ============================================================
+   VARIABLES GLOBALES
+   ============================================================ */
+
+let datosFinales = [];
+
+let datosFiltrados = [];
+
+
+/* ============================================================
+   FUNCIÓN AUXILIAR
+   ============================================================ */
+
+function valorCampo(objeto, posiblesNombres) {
+
+    if (!objeto) {
+        return "";
+    }
+
+    const claves =
+        Object.keys(objeto);
+
+    for (
+        const nombre
+        of posiblesNombres
+    ) {
+
+        const encontrada =
+            claves.find(
+                k =>
+                    k.toLowerCase() ===
+                    nombre.toLowerCase()
+            );
+
+        if (encontrada) {
+
+            const valor =
+                objeto[encontrada];
+
+            if (
+                valor !== null &&
+                valor !== undefined
+            ) {
+                return valor;
+            }
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+/* ============================================================
+   FORMATEAR FECHA
+   ============================================================ */
+
+function fechaEspanol(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+        return "";
+    }
+
+    const fecha =
+        new Date(valor);
+
+    if (
+        isNaN(
+            fecha.getTime()
+        )
+    ) {
+        return valor;
+    }
+
+    return new Intl.DateTimeFormat(
+        "es-EC",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+        }
+    ).format(fecha);
+
+}
+
+
+/* ============================================================
+   MENSAJES
+   ============================================================ */
+
+function mostrarMensaje(
+    texto,
+    tipo
+) {
+
+    const div =
+        document.getElementById(
+            "mensaje"
+        );
+
+    div.textContent =
+        texto;
+
+    div.className =
+        tipo;
+
+    div.style.display =
+        "block";
+
+}
+
+
+function ocultarMensaje() {
+
+    document.getElementById(
+        "mensaje"
+    ).style.display =
+        "none";
+
+}
+
+
+/* ============================================================
+   OBTENER URL DEL FEATURE SERVICE
+   ============================================================ */
+
+async function obtenerURLServicio() {
+
+    const url =
+        "https://www.arcgis.com/sharing/rest/content/items/" +
+        ITEM_ID +
+        "?f=json";
+
+    const respuesta =
+        await fetch(url);
+
+    const item =
+        await respuesta.json();
+
+    if (item.error) {
+
+        throw new Error(
+            item.error.message ||
+            "Error consultando el Item."
+        );
+
+    }
+
+    if (!item.url) {
+
+        throw new Error(
+            "El Item no contiene una URL de Feature Service."
+        );
+
+    }
+
+    return item.url.replace(
+        /\/$/,
+        ""
+    );
+
+}
+
+
+/* ============================================================
+   ESTRUCTURA DEL SERVICIO
+   ============================================================ */
+
+async function obtenerEstructuraServicio(
+    serviceURL
+) {
+
+    const respuesta =
+        await fetch(
+            serviceURL +
+            "?f=json"
+        );
+
+    const servicio =
+        await respuesta.json();
+
+    if (
+        servicio.error
+    ) {
+
+        throw new Error(
+            servicio.error.message
+        );
+
+    }
+
+    return servicio;
+
+}
+
+
+/* ============================================================
+   ENCONTRAR TABLA REPEAT
+   ============================================================ */
+
+function encontrarTablaRepeat(
+    servicio
+) {
+
+    const tablas =
+        servicio.tables || [];
+
+    let tabla =
+        tablas.find(
+            t =>
+                t.name.toLowerCase() ===
+                NOMBRE_TABLA_REPEAT
+                    .toLowerCase()
+        );
+
+    if (!tabla) {
+
+        tabla =
+            tablas.find(
+                t =>
+                    t.name
+                        .toLowerCase()
+                        .includes(
+                            NOMBRE_TABLA_REPEAT
+                                .toLowerCase()
+                        )
+            );
+
+    }
+
+    if (!tabla) {
+
+        throw new Error(
+            "No se encontró la tabla " +
+            NOMBRE_TABLA_REPEAT
+        );
+
+    }
+
+    return tabla;
+
+}
+
+
+/* ============================================================
+   ENCONTRAR CAPA PADRE
+   ============================================================ */
+
+function encontrarCapaPadre(
+    servicio
+) {
+
+    const capas =
+        servicio.layers || [];
+
+    if (
+        capas.length === 0
+    ) {
+
+        throw new Error(
+            "No se encontró la capa principal."
+        );
+
+    }
+
+    return capas[0];
+
+}
+
+
+/* ============================================================
+   CONSULTA ARCGIS
+   ============================================================ */
+
+async function consultarArcGIS(
+    url,
+    parametros
+) {
+
+    const cuerpo =
+        new URLSearchParams();
+
+    Object.keys(
+        parametros
+    )
+    .forEach(
+        clave => {
+
+            cuerpo.append(
+                clave,
+                parametros[clave]
+            );
+
+        }
+    );
+
+    cuerpo.append(
+        "f",
+        "json"
+    );
+
+    const respuesta =
+        await fetch(
+            url,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                body:
+                    cuerpo.toString()
+            }
+        );
+
+    const datos =
+        await respuesta.json();
+
+    if (
+        datos.error
+    ) {
+
+        console.error(
+            datos.error
+        );
+
+        throw new Error(
+            datos.error.message ||
+            "Error en la consulta de ArcGIS."
+        );
+
+    }
+
+    return datos;
+
+}
+
+
+/* ============================================================
+   OBTENER NO CUMPLE
+   ============================================================ */
+
+async function obtenerNoCumple(
+    tablaURL
+) {
+
+    const todos = [];
+
+    let offset = 0;
+
+    const cantidad = 1000;
+
+    while (true) {
+
+        const datos =
+            await consultarArcGIS(
+
+                tablaURL +
+                "/query",
+
+                {
+
+                    where:
+                        CAMPO_CUMPLIMIENTO +
+                        " = '" +
+                        VALOR_ALERTA +
+                        "'",
+
+                    outFields:
+                        "*",
+
+                    returnGeometry:
+                        "false",
+
+                    resultOffset:
+                        offset,
+
+                    resultRecordCount:
+                        cantidad
+
+                }
+
+            );
+
+        const registros =
+            datos.features || [];
+
+        todos.push(
+            ...registros
+        );
+
+        if (
+            registros.length <
+            cantidad
+        ) {
+            break;
+        }
+
+        offset +=
+            cantidad;
+
+    }
+
+    return todos;
+
+}
+
+
+/* ============================================================
+   CAMPOS TABLA
+   ============================================================ */
+
+async function obtenerCamposTabla(
+    tablaURL
+) {
+
+    const respuesta =
+        await fetch(
+            tablaURL +
+            "?f=json"
+        );
+
+    const metadata =
+        await respuesta.json();
+
+    if (
+        metadata.error
+    ) {
+
+        throw new Error(
+            metadata.error.message
+        );
+
+    }
+
+    return metadata.fields || [];
+
+}
+
+
+/* ============================================================
+   ENCONTRAR CAMPO
+   ============================================================ */
+
+function encontrarCampo(
+    campos,
+    opciones
+) {
+
+    for (
+        const opcion
+        of opciones
+    ) {
+
+        const campo =
+            campos.find(
+                f =>
+                    f.name.toLowerCase() ===
+                    opcion.toLowerCase()
+            );
+
+        if (campo) {
+            return campo.name;
+        }
+
+    }
+
+    return null;
+
+}
+
+
+/* ============================================================
+   OBTENER REGISTROS PADRE
+   ============================================================ */
+
+async function obtenerPadres(
+    capaURL,
+    globalIds
+) {
+
+    const mapa = {};
+
+    if (
+        globalIds.length === 0
+    ) {
+        return mapa;
+    }
+
+    const idsUnicos =
+        [...new Set(
+            globalIds
+        )];
+
+    const TAMANO_BLOQUE =
+        80;
+
+    for (
+        let i = 0;
+        i < idsUnicos.length;
+        i += TAMANO_BLOQUE
+    ) {
+
+        const bloque =
+            idsUnicos.slice(
+                i,
+                i +
+                TAMANO_BLOQUE
+            );
+
+        const listaSQL =
+            bloque
+                .map(
+                    id =>
+                        "'" +
+                        String(id)
+                            .replace(
+                                /'/g,
+                                "''"
+                            ) +
+                        "'"
+                )
+                .join(",");
+
+        const where =
+            "GlobalID IN (" +
+            listaSQL +
+            ")";
+
+        const resultado =
+            await consultarArcGIS(
+
+                capaURL +
+                "/query",
+
+                {
+
+                    where:
+                        where,
+
+                    outFields:
+                        "*",
+
+                    returnGeometry:
+                        "false"
+
+                }
+
+            );
+
+        for (
+            const feature
+            of resultado.features || []
+        ) {
+
+            const attrs =
+                feature.attributes;
+
+            const globalid =
+                valorCampo(
+                    attrs,
+                    [
+                        "GlobalID",
+                        "globalid"
+                    ]
+                );
+
+            if (globalid) {
+
+                mapa[
+                    String(
+                        globalid
+                    )
+                    .toLowerCase()
+                ] = attrs;
+
+            }
+
+        }
+
+    }
+
+    return mapa;
+
+}
+
+
+/* ============================================================
+   ESTABLECIMIENTO
+   ============================================================ */
+
+function obtenerEstablecimiento(
+    padre
+) {
+
+    const posiblesCampos = [
+
+        "CDI_Quito_wawas",
+
+        "UEM",
+
+        "CMEI",
+
+        "Mercados_y_Ferias",
+
+        "CETI_PETI",
+
+        "centro_patronato",
+
+        "NOMBRE"
+
+    ];
+
+    for (
+        const campo
+        of posiblesCampos
+    ) {
+
+        const valor =
+            valorCampo(
+                padre,
+                [campo]
+            );
+
+        if (
+            valor !== "" &&
+            valor !== null &&
+            valor !== undefined
+        ) {
+
+            return valor;
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+/* ============================================================
+   UNIR REPEAT + PADRE
+   ============================================================ */
+
+function construirDatosFinales(
+    registrosRepeat,
+    mapaPadres,
+    campoParentGlobalId
+) {
+
+    const resultado = [];
+
+    for (
+        const feature
+        of registrosRepeat
+    ) {
+
+        const repetido =
+            feature.attributes;
+
+        const parentId =
+            repetido[
+                campoParentGlobalId
+            ];
+
+        const padre =
+            mapaPadres[
+                String(
+                    parentId || ""
+                )
+                .toLowerCase()
+            ] || {};
+
+        resultado.push({
+
+            alerta:
+                "REQUIERE SEGUIMIENTO",
+
+            fecha:
+                fechaEspanol(
+                    valorCampo(
+                        padre,
+                        [
+                            "fecha_visita",
+                            "Fecha_visita",
+                            "FECHA_VISITA"
+                        ]
+                    )
+                ),
+
+            administracion:
+                valorCampo(
+                    padre,
+                    [
+                        "Administracion_Zonal",
+                        "ADMINISTRACION_ZONAL",
+                        "administracion_zonal"
+                    ]
+                ),
+
+            establecimiento:
+                obtenerEstablecimiento(
+                    padre
+                ),
+
+            cedula:
+                valorCampo(
+                    padre,
+                    [
+                        "CEDULA",
+                        "Cedula",
+                        "cedula"
+                    ]
+                ),
+
+            papeleta:
+                valorCampo(
+                    repetido,
+                    [
+                        "c_digo",
+                        "codigo",
+                        "CODIGO"
+                    ]
+                ),
+
+            tipoVisita:
+                valorCampo(
+                    repetido,
+                    [
+                        "TIPO_VISITA",
+                        "tipo_visita"
+                    ]
+                ),
+
+            alimento:
+                valorCampo(
+                    repetido,
+                    [
+                        "ALIMENTO",
+                        "alimento"
+                    ]
+                ),
+
+            microorganismo:
+                valorCampo(
+                    repetido,
+                    [
+                        "MICROORGANISMO",
+                        "microorganismo"
+                    ]
+                ),
+
+            riesgo:
+                valorCampo(
+                    repetido,
+                    [
+                        "RIESGO",
+                        "riesgo"
+                    ]
+                ),
+
+            tecnica:
+                valorCampo(
+                    repetido,
+                    [
+                        "Tecnica",
+                        "TECNICA",
+                        "tecnica"
+                    ]
+                ),
+
+            cumplimiento:
+                valorCampo(
+                    repetido,
+                    [
+                        "CUMPLIMIENTO",
+                        "cumplimiento"
+                    ]
+                ),
+
+            observaciones:
+                valorCampo(
+                    repetido,
+                    [
+                        "OBSERVACIONES",
+                        "observaciones"
+                    ]
+                )
+
+        });
+
+    }
+
+    return resultado;
+
+}
+
+
+/* ============================================================
+   TABLA
+   ============================================================ */
+
+function dibujarTabla(
+    datos
+) {
+
+    const tbody =
+        document.getElementById(
+            "cuerpoTabla"
+        );
+
+    tbody.innerHTML =
+        "";
+
+    for (
+        const registro
+        of datos
+    ) {
+
+        const fila =
+            document.createElement(
+                "tr"
+            );
+
+        fila.innerHTML = `
+
+            <td>
+                <span class="estado-alerta">
+                    🚨 ${escaparHTML(registro.alerta)}
+                </span>
+            </td>
+
+            <td>
+                ${escaparHTML(registro.fecha)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.administracion)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.establecimiento)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.cedula)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.papeleta)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.tipoVisita)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.alimento)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.microorganismo)}
+            </td>
+
+            <td class="riesgo-alto">
+                ${escaparHTML(registro.riesgo)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.tecnica)}
+            </td>
+
+            <td>
+                <span class="estado-alerta">
+                    ${escaparHTML(registro.cumplimiento)}
+                </span>
+            </td>
+
+            <td>
+                ${escaparHTML(registro.observaciones)}
+            </td>
+
+        `;
+
+        tbody.appendChild(
+            fila
+        );
+
+    }
+
+    document.getElementById(
+        "totalAlertas"
+    ).textContent =
+        datos.length;
+
+}
+
+
+/* ============================================================
+   ESCAPAR HTML
+   ============================================================ */
+
+function escaparHTML(
+    valor
+) {
+
+    if (
+        valor === null ||
+        valor === undefined
+    ) {
+        return "";
+    }
+
+    return String(valor)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* ============================================================
+   BUSCADOR
+   ============================================================ */
+
+document
+    .getElementById(
+        "busqueda"
+    )
+    .addEventListener(
+        "input",
+        function() {
+
+            const texto =
+                this.value
+                    .toLowerCase()
+                    .trim();
+
+            if (!texto) {
+
+                datosFiltrados =
+                    [...datosFinales];
+
+            } else {
+
+                datosFiltrados =
+                    datosFinales.filter(
+
+                        fila =>
+
+                            Object
+                                .values(
+                                    fila
+                                )
+                                .some(
+
+                                    valor =>
+                                        String(
+                                            valor
+                                        )
+                                        .toLowerCase()
+                                        .includes(
+                                            texto
+                                        )
+
+                                )
+
+                    );
+
+            }
+
+            dibujarTabla(
+                datosFiltrados
+            );
+
+        }
+    );
+
+
+/* ============================================================
+   EXPORTAR CSV
+   ============================================================ */
+
+function exportarCSV() {
+
+    const datos =
+        datosFiltrados;
+
+    if (
+        datos.length === 0
+    ) {
+
+        alert(
+            "No existen registros para descargar."
+        );
+
+        return;
+
+    }
+
+    const encabezados = [
+
+        "ALERTA",
+
+        "FECHA VISITA",
+
+        "ADMINISTRACIÓN ZONAL",
+
+        "ESTABLECIMIENTO",
+
+        "CÉDULA",
+
+        "N.º PAPELETA",
+
+        "TIPO DE VISITA",
+
+        "ALIMENTO",
+
+        "MICROORGANISMO",
+
+        "NIVEL DE RIESGO",
+
+        "TÉCNICA",
+
+        "CUMPLIMIENTO",
+
+        "OBSERVACIONES"
+
+    ];
+
+    const filas =
+        datos.map(
+            x => [
+
+                x.alerta,
+
+                x.fecha,
+
+                x.administracion,
+
+                x.establecimiento,
+
+                x.cedula,
+
+                x.papeleta,
+
+                x.tipoVisita,
+
+                x.alimento,
+
+                x.microorganismo,
+
+                x.riesgo,
+
+                x.tecnica,
+
+                x.cumplimiento,
+
+                x.observaciones
+
+            ]
+        );
+
+    const contenido =
+        [
+            encabezados,
+            ...filas
+        ]
+        .map(
+
+            fila =>
+
+                fila.map(
+
+                    valor =>
+
+                        '"' +
+                        String(
+                            valor ?? ""
+                        )
+                        .replace(
+                            /"/g,
+                            '""'
+                        ) +
+                        '"'
+
+                )
+                .join(";")
+
+        )
+        .join("\n");
+
+    const blob =
+        new Blob(
+            [
+                "\uFEFF" +
+                contenido
+            ],
+            {
+                type:
+                    "text/csv;charset=utf-8;"
+            }
+        );
+
+    const enlace =
+        document.createElement(
+            "a"
+        );
+
+    enlace.href =
+        URL.createObjectURL(
+            blob
+        );
+
+    const hoy =
+        new Date()
+            .toISOString()
+            .slice(
+                0,
+                10
+            );
+
+    enlace.download =
+        "Alertas_Riesgo_Microbiologico_" +
+        hoy +
+        ".csv";
+
+    document.body
+        .appendChild(
+            enlace
+        );
+
+    enlace.click();
+
+    enlace.remove();
+
+}
+
+
+/* ============================================================
+   CARGA PRINCIPAL
+   ============================================================ */
+
+async function cargarDatos() {
+
+    ocultarMensaje();
+
+    document.getElementById(
+        "cargando"
+    ).style.display =
+        "block";
+
+    document.getElementById(
+        "tablaAlertas"
+    ).style.display =
+        "none";
+
+    try {
+
+        const serviceURL =
+            await obtenerURLServicio();
+
+        const servicio =
+            await obtenerEstructuraServicio(
+                serviceURL
+            );
+
+        const capaPadre =
+            encontrarCapaPadre(
+                servicio
+            );
+
+        const tablaRepeat =
+            encontrarTablaRepeat(
+                servicio
+            );
+
+        const capaURL =
+            serviceURL +
+            "/" +
+            capaPadre.id;
+
+        const tablaURL =
+            serviceURL +
+            "/" +
+            tablaRepeat.id;
+
+        const camposRepeat =
+            await obtenerCamposTabla(
+                tablaURL
+            );
+
+        const campoParentGlobalId =
+            encontrarCampo(
+                camposRepeat,
+                [
+                    "parentglobalid",
+                    "ParentGlobalID",
+                    "parentGlobalId",
+                    "PARENTGLOBALID"
+                ]
+            );
+
+        if (
+            !campoParentGlobalId
+        ) {
+
+            throw new Error(
+                "No se encontró el campo parentglobalid en la tabla repeat."
+            );
+
+        }
+
+        const registrosRepeat =
+            await obtenerNoCumple(
+                tablaURL
+            );
+
+        const parentIds =
+            registrosRepeat
+
+                .map(
+                    f =>
+                        f.attributes[
+                            campoParentGlobalId
+                        ]
+                )
+
+                .filter(
+                    x =>
+                        x !== null &&
+                        x !== undefined &&
+                        x !== ""
+                );
+
+        const mapaPadres =
+            await obtenerPadres(
+                capaURL,
+                parentIds
+            );
+
+        datosFinales =
+            construirDatosFinales(
+                registrosRepeat,
+                mapaPadres,
+                campoParentGlobalId
+            );
+
+        datosFiltrados =
+            [...datosFinales];
+
+        dibujarTabla(
+            datosFiltrados
+        );
+
+        document.getElementById(
+            "cargando"
+        ).style.display =
+            "none";
+
+        document.getElementById(
+            "tablaAlertas"
+        ).style.display =
+            "table";
+
+        if (
+            datosFinales.length === 0
+        ) {
+
+            mostrarMensaje(
+                "✅ No existen muestras con resultado NO CUMPLE.",
+                "ok"
+            );
+
+        }
+
+        document.getElementById(
+            "ultimaActualizacion"
+        ).textContent =
+
+            "Última actualización: " +
+
+            new Date()
+                .toLocaleString(
+                    "es-EC"
+                );
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            error
+        );
+
+        document.getElementById(
+            "cargando"
+        ).style.display =
+            "none";
+
+        mostrarMensaje(
+            "❌ " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   EJECUTAR AL ABRIR
+   ============================================================ */
+
+window.addEventListener(
+    "load",
+    cargarDatos
+);
+
+
+/* ============================================================
+   ACTUALIZACIÓN AUTOMÁTICA CADA 5 MINUTOS
+   ============================================================ */
+
+setInterval(
+    cargarDatos,
+    300000
+);
+
+</script>
+
+</body>
+
+</html>

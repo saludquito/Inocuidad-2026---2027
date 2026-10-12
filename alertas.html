@@ -213,7 +213,7 @@
     <h1>🚨 Alertas de Riesgo Microbiológico</h1>
 
     <div class="subtitulo">
-        Registros microbiológicos con resultado NO CUMPLE
+        Registros microbiológicos NO CUMPLE correspondientes al año 2026
     </div>
 
     <div class="tarjetas">
@@ -228,7 +228,7 @@
             </div>
 
             <div class="titulo">
-                MUESTRAS NO CUMPLE
+                MUESTRAS NO CUMPLE - 2026
             </div>
 
         </div>
@@ -411,7 +411,9 @@ function valorCampo(
                 valor !== null &&
                 valor !== undefined
             ) {
+
                 return valor;
+
             }
 
         }
@@ -419,6 +421,61 @@ function valorCampo(
     }
 
     return "";
+
+}
+
+
+/* ============================================================
+   VALIDAR SI LA FECHA CORRESPONDE A 2026
+   ============================================================ */
+
+function esFecha2026(valor) {
+
+    if (
+        valor === null ||
+        valor === undefined ||
+        valor === ""
+    ) {
+        return false;
+    }
+
+    const fecha =
+        new Date(valor);
+
+    if (
+        isNaN(
+            fecha.getTime()
+        )
+    ) {
+        return false;
+    }
+
+    const inicio =
+        new Date(
+            2026,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+        );
+
+    const fin =
+        new Date(
+            2027,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0
+        );
+
+    return (
+        fecha >= inicio &&
+        fecha < fin
+    );
 
 }
 
@@ -445,7 +502,9 @@ function fechaEspanol(valor) {
             fecha.getTime()
         )
     ) {
+
         return valor;
+
     }
 
     return new Intl.DateTimeFormat(
@@ -698,6 +757,10 @@ async function consultarArcGIS(
         datos.error
     ) {
 
+        console.error(
+            datos.error
+        );
+
         throw new Error(
             datos.error.message ||
             "Error en la consulta de ArcGIS."
@@ -711,7 +774,7 @@ async function consultarArcGIS(
 
 
 /* ============================================================
-   OBTENER NO CUMPLE
+   OBTENER NO CUMPLE + SOLO AÑO 2026
    ============================================================ */
 
 async function obtenerNoCumple(
@@ -720,7 +783,8 @@ async function obtenerNoCumple(
 
     const todos = [];
 
-    let offset = 0;
+    let offset =
+        0;
 
     const cantidad =
         1000;
@@ -760,15 +824,52 @@ async function obtenerNoCumple(
         const registros =
             datos.features || [];
 
+
+        /* ==============================================
+           FILTRO EXACTO DEL AÑO 2026
+           ============================================== */
+
+        const registros2026 =
+            registros.filter(
+                feature => {
+
+                    const fecha =
+                        valorCampo(
+                            feature.attributes,
+                            [
+                                "fecha_muestra",
+                                "FECHA_MUESTRA",
+                                "Fecha_muestra"
+                            ]
+                        );
+
+                    return esFecha2026(
+                        fecha
+                    );
+
+                }
+            );
+
+
         todos.push(
-            ...registros
+            ...registros2026
         );
+
+
+        /*
+           IMPORTANTE:
+           Esta condición usa el número ORIGINAL
+           de registros retornados por ArcGIS,
+           no los registros después del filtro 2026.
+        */
 
         if (
             registros.length <
             cantidad
         ) {
+
             break;
+
         }
 
         offset +=
@@ -835,7 +936,9 @@ function encontrarCampo(
             );
 
         if (campo) {
+
             return campo.name;
+
         }
 
     }
@@ -859,7 +962,9 @@ async function obtenerPadres(
     if (
         globalIds.length === 0
     ) {
+
         return mapa;
+
     }
 
     const idsUnicos =
@@ -961,7 +1066,7 @@ async function obtenerPadres(
 
 
 /* ============================================================
-   CONSTRUIR DATOS
+   CONSTRUIR DATOS FINALES
    ============================================================ */
 
 function construirDatosFinales(
@@ -993,10 +1098,16 @@ function construirDatosFinales(
                 .toLowerCase()
             ] || {};
 
+
         resultado.push({
 
             alerta:
                 "REQUIERE SEGUIMIENTO",
+
+
+            /* =============================
+               FECHA DENTRO DEL REPEAT
+               ============================= */
 
             fechaMuestra:
                 fechaEspanol(
@@ -1010,6 +1121,11 @@ function construirDatosFinales(
                     )
                 ),
 
+
+            /* =============================
+               CAPA PRINCIPAL
+               ============================= */
+
             administracion:
                 valorCampo(
                     padre,
@@ -1019,6 +1135,7 @@ function construirDatosFinales(
                         "administracion_zonal"
                     ]
                 ),
+
 
             cedula:
                 valorCampo(
@@ -1030,51 +1147,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-            papeleta:
-                valorCampo(
-                    repetido,
-                    [
-                        "c_digo",
-                        "codigo",
-                        "CODIGO"
-                    ]
-                ),
-
-            tipoVisita:
-                valorCampo(
-                    repetido,
-                    [
-                        "TIPO_VISITA",
-                        "tipo_visita"
-                    ]
-                ),
-
-            alimento:
-                valorCampo(
-                    repetido,
-                    [
-                        "ALIMENTO",
-                        "alimento"
-                    ]
-                ),
-
-            microorganismo:
-                valorCampo(
-                    repetido,
-                    [
-                        "MICROORGANISMO",
-                        "microorganismo"
-                    ]
-                ),
-
-            riesgo:
-                valorCampo(
-                    repetido,
-                    [
-                        "RIESGO",
-                        "riesgo"
-                    ]
-                ),
 
             tecnica:
                 valorCampo(
@@ -1085,6 +1157,62 @@ function construirDatosFinales(
                         "tecnica"
                     ]
                 ),
+
+
+            /* =============================
+               CAMPOS DEL REPEAT
+               ============================= */
+
+            papeleta:
+                valorCampo(
+                    repetido,
+                    [
+                        "c_digo",
+                        "codigo",
+                        "CODIGO"
+                    ]
+                ),
+
+
+            tipoVisita:
+                valorCampo(
+                    repetido,
+                    [
+                        "TIPO_VISITA",
+                        "tipo_visita"
+                    ]
+                ),
+
+
+            alimento:
+                valorCampo(
+                    repetido,
+                    [
+                        "ALIMENTO",
+                        "alimento"
+                    ]
+                ),
+
+
+            microorganismo:
+                valorCampo(
+                    repetido,
+                    [
+                        "MICROORGANISMO",
+                        "microorganismo"
+                    ]
+                ),
+
+
+            riesgo:
+                valorCampo(
+                    repetido,
+                    [
+                        "RIESGO",
+                        "riesgo"
+                    ]
+                ),
+
 
             cumplimiento:
                 valorCampo(
@@ -1208,7 +1336,9 @@ function escaparHTML(
         valor === null ||
         valor === undefined
     ) {
+
         return "";
+
     }
 
     return String(valor)
@@ -1346,6 +1476,7 @@ function exportarCSV() {
 
     ];
 
+
     const filas =
         datos.map(
             x => [
@@ -1374,6 +1505,7 @@ function exportarCSV() {
 
             ]
         );
+
 
     const contenido =
         [
@@ -1404,6 +1536,7 @@ function exportarCSV() {
         )
         .join("\n");
 
+
     const blob =
         new Blob(
             [
@@ -1416,35 +1549,31 @@ function exportarCSV() {
             }
         );
 
+
     const enlace =
         document.createElement(
             "a"
         );
+
 
     enlace.href =
         URL.createObjectURL(
             blob
         );
 
-    const hoy =
-        new Date()
-            .toISOString()
-            .slice(
-                0,
-                10
-            );
 
     enlace.download =
-        "Alertas_Riesgo_Microbiologico_" +
-        hoy +
-        ".csv";
+        "Alertas_Riesgo_Microbiologico_2026.csv";
+
 
     document.body
         .appendChild(
             enlace
         );
 
+
     enlace.click();
+
 
     enlace.remove();
 
@@ -1459,50 +1588,60 @@ async function cargarDatos() {
 
     ocultarMensaje();
 
+
     document.getElementById(
         "cargando"
     ).style.display =
         "block";
+
 
     document.getElementById(
         "tablaAlertas"
     ).style.display =
         "none";
 
+
     try {
 
         const serviceURL =
             await obtenerURLServicio();
+
 
         const servicio =
             await obtenerEstructuraServicio(
                 serviceURL
             );
 
+
         const capaPadre =
             encontrarCapaPadre(
                 servicio
             );
+
 
         const tablaRepeat =
             encontrarTablaRepeat(
                 servicio
             );
 
+
         const capaURL =
             serviceURL +
             "/" +
             capaPadre.id;
+
 
         const tablaURL =
             serviceURL +
             "/" +
             tablaRepeat.id;
 
+
         const camposRepeat =
             await obtenerCamposTabla(
                 tablaURL
             );
+
 
         const campoParentGlobalId =
             encontrarCampo(
@@ -1515,6 +1654,7 @@ async function cargarDatos() {
                 ]
             );
 
+
         if (
             !campoParentGlobalId
         ) {
@@ -1525,10 +1665,20 @@ async function cargarDatos() {
 
         }
 
+
+        /* ===========================================
+           SOLO NO CUMPLE DEL AÑO 2026
+           =========================================== */
+
         const registrosRepeat =
             await obtenerNoCumple(
                 tablaURL
             );
+
+
+        /* ===========================================
+           OBTENER IDS DE LOS PADRES
+           =========================================== */
 
         const parentIds =
             registrosRepeat
@@ -1547,11 +1697,21 @@ async function cargarDatos() {
                         x !== ""
                 );
 
+
+        /* ===========================================
+           CONSULTAR CAPA PRINCIPAL
+           =========================================== */
+
         const mapaPadres =
             await obtenerPadres(
                 capaURL,
                 parentIds
             );
+
+
+        /* ===========================================
+           UNIR PADRE + REPEAT
+           =========================================== */
 
         datosFinales =
             construirDatosFinales(
@@ -1560,33 +1720,43 @@ async function cargarDatos() {
                 campoParentGlobalId
             );
 
+
         datosFiltrados =
             [...datosFinales];
+
+
+        /* ===========================================
+           MOSTRAR
+           =========================================== */
 
         dibujarTabla(
             datosFiltrados
         );
+
 
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
 
+
         document.getElementById(
             "tablaAlertas"
         ).style.display =
             "table";
+
 
         if (
             datosFinales.length === 0
         ) {
 
             mostrarMensaje(
-                "✅ No existen muestras con resultado NO CUMPLE.",
+                "✅ No existen muestras NO CUMPLE correspondientes al año 2026.",
                 "ok"
             );
 
         }
+
 
         document.getElementById(
             "ultimaActualizacion"
@@ -1599,6 +1769,7 @@ async function cargarDatos() {
                     "es-EC"
                 );
 
+
     } catch (
         error
     ) {
@@ -1607,10 +1778,12 @@ async function cargarDatos() {
             error
         );
 
+
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
+
 
         mostrarMensaje(
             "❌ " +
@@ -1624,7 +1797,7 @@ async function cargarDatos() {
 
 
 /* ============================================================
-   EJECUTAR
+   EJECUTAR AL ABRIR
    ============================================================ */
 
 window.addEventListener(

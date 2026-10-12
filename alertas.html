@@ -25,10 +25,6 @@
         color: #263238;
     }
 
-    /* ==========================
-       LOGIN
-       ========================== */
-
     #loginScreen {
         width: 100vw;
         height: 100vh;
@@ -91,10 +87,6 @@
         color: #c62828;
         font-weight: bold;
     }
-
-    /* ==========================
-       CONTENIDO
-       ========================== */
 
     #contenidoAlertas {
         display: none;
@@ -203,8 +195,6 @@
     table {
         width: 100%;
         border-collapse: collapse;
-
-        /* aumentamos el ancho porque ahora hay más columnas */
         min-width: 2200px;
     }
 
@@ -286,10 +276,6 @@
 
 <body>
 
-<!-- ========================================================
-     LOGIN
-     ======================================================== -->
-
 <div id="loginScreen">
 
     <div class="loginBox">
@@ -319,10 +305,6 @@
 
 </div>
 
-
-<!-- ========================================================
-     CONTENIDO ALERTAS
-     ======================================================== -->
 
 <div id="contenidoAlertas">
 
@@ -385,9 +367,7 @@
 
     </div>
 
-
     <div id="mensaje"></div>
-
 
     <div class="tabla-contenedor">
 
@@ -428,6 +408,15 @@
                         VISITA
                     </th>
 
+                    <th>TÉCNICA</th>
+
+                    <th>
+                        NIVEL DE<br>
+                        RIESGO
+                    </th>
+
+                    <th>CUMPLIMIENTO</th>
+
                     <th>
                         MERCADOS<br>
                         Y FERIAS
@@ -442,13 +431,9 @@
                         WAWAS
                     </th>
 
-                    <th>
-                        UEM
-                    </th>
+                    <th>UEM</th>
 
-                    <th>
-                        CEMEI
-                    </th>
+                    <th>CEMEI</th>
 
                     <th>
                         CENTRO<br>
@@ -459,15 +444,6 @@
 
                     <th>MICROORGANISMO</th>
 
-                    <th>
-                        NIVEL DE<br>
-                        RIESGO
-                    </th>
-
-                    <th>TÉCNICA</th>
-
-                    <th>CUMPLIMIENTO</th>
-
                 </tr>
 
             </thead>
@@ -477,7 +453,6 @@
         </table>
 
     </div>
-
 
     <div
         class="ultimaActualizacion"
@@ -491,17 +466,9 @@
 
 <script>
 
-/* ============================================================
-   CONTRASEÑA
-   ============================================================ */
-
 const PASSWORD_ALERTAS =
     "alertas2026";
 
-
-/* ============================================================
-   LOGIN
-   ============================================================ */
 
 function verificarPassword() {
 
@@ -514,7 +481,6 @@ function verificarPassword() {
         document.getElementById(
             "mensajeError"
         );
-
 
     if (
         passwordIngresado ===
@@ -535,7 +501,8 @@ function verificarPassword() {
 
         document.getElementById(
             "password"
-        ).value = "";
+        ).value =
+            "";
 
         document.getElementById(
             "password"
@@ -545,10 +512,6 @@ function verificarPassword() {
 
 }
 
-
-/* ============================================================
-   MOSTRAR ALERTAS
-   ============================================================ */
 
 function mostrarAlertas() {
 
@@ -567,10 +530,6 @@ function mostrarAlertas() {
 }
 
 
-/* ============================================================
-   CERRAR SESIÓN
-   ============================================================ */
-
 function cerrarSesion() {
 
     sessionStorage.removeItem(
@@ -581,10 +540,6 @@ function cerrarSesion() {
 
 }
 
-
-/* ============================================================
-   ENTER PARA INGRESAR
-   ============================================================ */
 
 document
     .getElementById(
@@ -607,10 +562,6 @@ document
     );
 
 
-/* ============================================================
-   CONFIGURACIÓN ARCGIS
-   ============================================================ */
-
 const ITEM_ID =
     "040efa0fbe404ee18731d06960599c91";
 
@@ -623,15 +574,12 @@ const CAMPO_CUMPLIMIENTO =
 const VALOR_ALERTA =
     "NO CUMPLE";
 
+let datosFinales =
+    [];
 
-let datosFinales = [];
+let datosFiltrados =
+    [];
 
-let datosFiltrados = [];
-
-
-/* ============================================================
-   BUSCAR CAMPO
-   ============================================================ */
 
 function valorCampo(
     objeto,
@@ -639,13 +587,15 @@ function valorCampo(
 ) {
 
     if (!objeto) {
+
         return "";
+
     }
 
-
     const claves =
-        Object.keys(objeto);
-
+        Object.keys(
+            objeto
+        );
 
     for (
         const nombre
@@ -659,12 +609,12 @@ function valorCampo(
                     nombre.toLowerCase()
             );
 
-
         if (encontrada) {
 
             const valor =
-                objeto[encontrada];
-
+                objeto[
+                    encontrada
+                ];
 
             if (
                 valor !== null &&
@@ -679,15 +629,10 @@ function valorCampo(
 
     }
 
-
     return "";
 
 }
 
-
-/* ============================================================
-   SOLO 2026
-   ============================================================ */
 
 function esFecha2026(
     valor
@@ -703,10 +648,10 @@ function esFecha2026(
 
     }
 
-
     const fecha =
-        new Date(valor);
-
+        new Date(
+            valor
+        );
 
     if (
         isNaN(
@@ -718,14 +663,12 @@ function esFecha2026(
 
     }
 
-
     const inicio =
         new Date(
             2026,
             0,
             1
         );
-
 
     const fin =
         new Date(
@@ -734,7 +677,6 @@ function esFecha2026(
             1
         );
 
-
     return (
         fecha >= inicio &&
         fecha < fin
@@ -742,10 +684,6 @@ function esFecha2026(
 
 }
 
-
-/* ============================================================
-   FORMATEAR FECHA
-   ============================================================ */
 
 function fechaEspanol(
     valor
@@ -761,10 +699,10 @@ function fechaEspanol(
 
     }
 
-
     const fecha =
-        new Date(valor);
-
+        new Date(
+            valor
+        );
 
     if (
         isNaN(
@@ -776,22 +714,24 @@ function fechaEspanol(
 
     }
 
-
     return new Intl.DateTimeFormat(
         "es-EC",
         {
-            day: "2-digit",
-            month: "2-digit",
-            year: "numeric"
+            day:
+                "2-digit",
+
+            month:
+                "2-digit",
+
+            year:
+                "numeric"
         }
-    ).format(fecha);
+    ).format(
+        fecha
+    );
 
 }
 
-
-/* ============================================================
-   MENSAJES
-   ============================================================ */
 
 function mostrarMensaje(
     texto,
@@ -803,14 +743,11 @@ function mostrarMensaje(
             "mensaje"
         );
 
-
     div.textContent =
         texto;
 
-
     div.className =
         tipo;
-
 
     div.style.display =
         "block";
@@ -828,10 +765,6 @@ function ocultarMensaje() {
 }
 
 
-/* ============================================================
-   URL FEATURE SERVICE
-   ============================================================ */
-
 async function obtenerURLServicio() {
 
     const url =
@@ -839,16 +772,34 @@ async function obtenerURLServicio() {
         ITEM_ID +
         "?f=json";
 
-
     const respuesta =
-        await fetch(url);
+        await fetch(
+            url,
+            {
+                method:
+                    "GET",
 
+                cache:
+                    "no-store"
+            }
+        );
+
+    if (
+        !respuesta.ok
+    ) {
+
+        throw new Error(
+            "No se pudo consultar el Item de ArcGIS."
+        );
+
+    }
 
     const item =
         await respuesta.json();
 
-
-    if (item.error) {
+    if (
+        item.error
+    ) {
 
         throw new Error(
             item.error.message ||
@@ -857,15 +808,15 @@ async function obtenerURLServicio() {
 
     }
 
-
-    if (!item.url) {
+    if (
+        !item.url
+    ) {
 
         throw new Error(
             "El Item no contiene una URL de Feature Service."
         );
 
     }
-
 
     return item.url.replace(
         /\/$/,
@@ -875,10 +826,6 @@ async function obtenerURLServicio() {
 }
 
 
-/* ============================================================
-   ESTRUCTURA SERVICIO
-   ============================================================ */
-
 async function obtenerEstructuraServicio(
     serviceURL
 ) {
@@ -886,33 +833,44 @@ async function obtenerEstructuraServicio(
     const respuesta =
         await fetch(
             serviceURL +
-            "?f=json"
+            "?f=json",
+            {
+                method:
+                    "GET",
+
+                cache:
+                    "no-store"
+            }
         );
 
+    if (
+        !respuesta.ok
+    ) {
+
+        throw new Error(
+            "No se pudo consultar la estructura del Feature Service."
+        );
+
+    }
 
     const servicio =
         await respuesta.json();
-
 
     if (
         servicio.error
     ) {
 
         throw new Error(
-            servicio.error.message
+            servicio.error.message ||
+            "Error consultando el Feature Service."
         );
 
     }
-
 
     return servicio;
 
 }
 
-
-/* ============================================================
-   TABLA REPEAT
-   ============================================================ */
 
 function encontrarTablaRepeat(
     servicio
@@ -921,15 +879,14 @@ function encontrarTablaRepeat(
     const tablas =
         servicio.tables || [];
 
-
     let tabla =
         tablas.find(
             t =>
-                t.name.toLowerCase() ===
+                t.name
+                    .toLowerCase() ===
                 NOMBRE_TABLA_REPEAT
                     .toLowerCase()
         );
-
 
     if (!tabla) {
 
@@ -946,7 +903,6 @@ function encontrarTablaRepeat(
 
     }
 
-
     if (!tabla) {
 
         throw new Error(
@@ -956,15 +912,10 @@ function encontrarTablaRepeat(
 
     }
 
-
     return tabla;
 
 }
 
-
-/* ============================================================
-   CAPA PADRE
-   ============================================================ */
 
 function encontrarCapaPadre(
     servicio
@@ -972,7 +923,6 @@ function encontrarCapaPadre(
 
     const capas =
         servicio.layers || [];
-
 
     if (
         capas.length === 0
@@ -984,24 +934,18 @@ function encontrarCapaPadre(
 
     }
 
-
     return capas[0];
 
 }
 
-
-/* ============================================================
-   CONSULTA ARCGIS
-   ============================================================ */
 
 async function consultarArcGIS(
     url,
     parametros
 ) {
 
-    const cuerpo =
+    const params =
         new URLSearchParams();
-
 
     Object.keys(
         parametros
@@ -1009,45 +953,64 @@ async function consultarArcGIS(
     .forEach(
         clave => {
 
-            cuerpo.append(
+            params.append(
                 clave,
-                parametros[clave]
+                parametros[
+                    clave
+                ]
             );
 
         }
     );
 
-
-    cuerpo.append(
+    params.append(
         "f",
         "json"
     );
 
+    const urlCompleta =
+        url +
+        "?" +
+        params.toString();
 
     const respuesta =
         await fetch(
-            url,
+            urlCompleta,
             {
-                method: "POST",
+                method:
+                    "GET",
 
-                headers: {
-                    "Content-Type":
-                        "application/x-www-form-urlencoded"
-                },
+                mode:
+                    "cors",
 
-                body:
-                    cuerpo.toString()
+                cache:
+                    "no-store"
             }
         );
 
+    if (
+        !respuesta.ok
+    ) {
+
+        throw new Error(
+            "Error HTTP " +
+            respuesta.status +
+            " consultando ArcGIS."
+        );
+
+    }
 
     const datos =
         await respuesta.json();
 
-
     if (
         datos.error
     ) {
+
+        console.error(
+            "Error ArcGIS:",
+            datos.error
+        );
 
         throw new Error(
             datos.error.message ||
@@ -1056,32 +1019,27 @@ async function consultarArcGIS(
 
     }
 
-
     return datos;
 
 }
 
 
-/* ============================================================
-   NO CUMPLE DEL 2026
-   ============================================================ */
-
 async function obtenerNoCumple(
     tablaURL
 ) {
 
-    const todos = [];
-
+    const todos =
+        [];
 
     let offset =
         0;
 
-
     const cantidad =
         1000;
 
-
-    while (true) {
+    while (
+        true
+    ) {
 
         const datos =
             await consultarArcGIS(
@@ -1107,16 +1065,17 @@ async function obtenerNoCumple(
                         offset,
 
                     resultRecordCount:
-                        cantidad
+                        cantidad,
+
+                    orderByFields:
+                        "OBJECTID ASC"
 
                 }
 
             );
 
-
         const registros =
             datos.features || [];
-
 
         const registros2026 =
             registros.filter(
@@ -1132,7 +1091,6 @@ async function obtenerNoCumple(
                             ]
                         );
 
-
                     return esFecha2026(
                         fecha
                     );
@@ -1140,11 +1098,9 @@ async function obtenerNoCumple(
                 }
             );
 
-
         todos.push(
             ...registros2026
         );
-
 
         if (
             registros.length <
@@ -1155,21 +1111,15 @@ async function obtenerNoCumple(
 
         }
 
-
         offset +=
             cantidad;
 
     }
 
-
     return todos;
 
 }
 
-
-/* ============================================================
-   CAMPOS TABLA
-   ============================================================ */
 
 async function obtenerCamposTabla(
     tablaURL
@@ -1178,13 +1128,28 @@ async function obtenerCamposTabla(
     const respuesta =
         await fetch(
             tablaURL +
-            "?f=json"
+            "?f=json",
+            {
+                method:
+                    "GET",
+
+                cache:
+                    "no-store"
+            }
         );
 
+    if (
+        !respuesta.ok
+    ) {
+
+        throw new Error(
+            "No se pudieron obtener los campos del repeat."
+        );
+
+    }
 
     const metadata =
         await respuesta.json();
-
 
     if (
         metadata.error
@@ -1196,15 +1161,10 @@ async function obtenerCamposTabla(
 
     }
 
-
     return metadata.fields || [];
 
 }
 
-
-/* ============================================================
-   ENCONTRAR CAMPO
-   ============================================================ */
 
 function encontrarCampo(
     campos,
@@ -1219,12 +1179,15 @@ function encontrarCampo(
         const campo =
             campos.find(
                 f =>
-                    f.name.toLowerCase() ===
-                    opcion.toLowerCase()
+                    f.name
+                        .toLowerCase() ===
+                    opcion
+                        .toLowerCase()
             );
 
-
-        if (campo) {
+        if (
+            campo
+        ) {
 
             return campo.name;
 
@@ -1232,23 +1195,18 @@ function encontrarCampo(
 
     }
 
-
     return null;
 
 }
 
-
-/* ============================================================
-   OBTENER PADRES
-   ============================================================ */
 
 async function obtenerPadres(
     capaURL,
     globalIds
 ) {
 
-    const mapa = {};
-
+    const mapa =
+        {};
 
     if (
         globalIds.length === 0
@@ -1258,16 +1216,15 @@ async function obtenerPadres(
 
     }
 
-
     const idsUnicos =
-        [...new Set(
-            globalIds
-        )];
-
+        [
+            ...new Set(
+                globalIds
+            )
+        ];
 
     const TAMANO_BLOQUE =
-        80;
-
+        30;
 
     for (
         let i = 0;
@@ -1282,27 +1239,28 @@ async function obtenerPadres(
                 TAMANO_BLOQUE
             );
 
-
         const listaSQL =
             bloque
                 .map(
                     id =>
                         "'" +
-                        String(id)
-                            .replace(
-                                /'/g,
-                                "''"
-                            ) +
+                        String(
+                            id
+                        )
+                        .replace(
+                            /'/g,
+                            "''"
+                        ) +
                         "'"
                 )
-                .join(",");
-
+                .join(
+                    ","
+                );
 
         const where =
             "GlobalID IN (" +
             listaSQL +
             ")";
-
 
         const resultado =
             await consultarArcGIS(
@@ -1325,7 +1283,6 @@ async function obtenerPadres(
 
             );
 
-
         for (
             const feature
             of resultado.features || []
@@ -1333,7 +1290,6 @@ async function obtenerPadres(
 
             const attrs =
                 feature.attributes;
-
 
             const globalid =
                 valorCampo(
@@ -1344,15 +1300,17 @@ async function obtenerPadres(
                     ]
                 );
 
-
-            if (globalid) {
+            if (
+                globalid
+            ) {
 
                 mapa[
                     String(
                         globalid
                     )
                     .toLowerCase()
-                ] = attrs;
+                ] =
+                    attrs;
 
             }
 
@@ -1360,15 +1318,10 @@ async function obtenerPadres(
 
     }
 
-
     return mapa;
 
 }
 
-
-/* ============================================================
-   CONSTRUIR DATOS
-   ============================================================ */
 
 function construirDatosFinales(
     registrosRepeat,
@@ -1376,8 +1329,8 @@ function construirDatosFinales(
     campoParentGlobalId
 ) {
 
-    const resultado = [];
-
+    const resultado =
+        [];
 
     for (
         const feature
@@ -1387,27 +1340,24 @@ function construirDatosFinales(
         const repetido =
             feature.attributes;
 
-
         const parentId =
             repetido[
                 campoParentGlobalId
             ];
 
-
         const padre =
             mapaPadres[
                 String(
-                    parentId || ""
+                    parentId ||
+                    ""
                 )
                 .toLowerCase()
             ] || {};
-
 
         resultado.push({
 
             alerta:
                 "REQUIERE SEGUIMIENTO",
-
 
             fechaMuestra:
                 fechaEspanol(
@@ -1421,7 +1371,6 @@ function construirDatosFinales(
                     )
                 ),
 
-
             administracion:
                 valorCampo(
                     padre,
@@ -1431,7 +1380,6 @@ function construirDatosFinales(
                         "administracion_zonal"
                     ]
                 ),
-
 
             cedula:
                 valorCampo(
@@ -1443,7 +1391,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             tecnica:
                 valorCampo(
                     padre,
@@ -1454,11 +1401,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
-            /* =============================================
-               NUEVOS CAMPOS DEL FEATURE PRINCIPAL
-               ============================================= */
-
             mercadosFerias:
                 valorCampo(
                     padre,
@@ -1467,7 +1409,6 @@ function construirDatosFinales(
                         "mercados_y_ferias"
                     ]
                 ),
-
 
             cetiPeti:
                 valorCampo(
@@ -1478,7 +1419,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             cdiQuitoWawas:
                 valorCampo(
                     padre,
@@ -1487,7 +1427,6 @@ function construirDatosFinales(
                         "cdi_quito_wawas"
                     ]
                 ),
-
 
             uem:
                 valorCampo(
@@ -1498,7 +1437,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             cmei:
                 valorCampo(
                     padre,
@@ -1507,7 +1445,6 @@ function construirDatosFinales(
                         "cmei"
                     ]
                 ),
-
 
             centroPatronato:
                 valorCampo(
@@ -1519,11 +1456,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
-            /* =============================================
-               CAMPOS DEL REPEAT
-               ============================================= */
-
             papeleta:
                 valorCampo(
                     repetido,
@@ -1534,7 +1466,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             tipoVisita:
                 valorCampo(
                     repetido,
@@ -1543,7 +1474,6 @@ function construirDatosFinales(
                         "tipo_visita"
                     ]
                 ),
-
 
             alimento:
                 valorCampo(
@@ -1554,7 +1484,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             microorganismo:
                 valorCampo(
                     repetido,
@@ -1564,7 +1493,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             riesgo:
                 valorCampo(
                     repetido,
@@ -1573,7 +1501,6 @@ function construirDatosFinales(
                         "riesgo"
                     ]
                 ),
-
 
             cumplimiento:
                 valorCampo(
@@ -1588,15 +1515,10 @@ function construirDatosFinales(
 
     }
 
-
     return resultado;
 
 }
 
-
-/* ============================================================
-   DIBUJAR TABLA
-   ============================================================ */
 
 function dibujarTabla(
     datos
@@ -1607,10 +1529,8 @@ function dibujarTabla(
             "cuerpoTabla"
         );
 
-
     tbody.innerHTML =
         "";
-
 
     for (
         const registro
@@ -1621,7 +1541,6 @@ function dibujarTabla(
             document.createElement(
                 "tr"
             );
-
 
         fila.innerHTML = `
 
@@ -1649,6 +1568,20 @@ function dibujarTabla(
 
             <td>
                 ${escaparHTML(registro.tipoVisita)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.tecnica)}
+            </td>
+
+            <td class="riesgo">
+                ${escaparHTML(registro.riesgo)}
+            </td>
+
+            <td>
+                <span class="estado-alerta">
+                    ${escaparHTML(registro.cumplimiento)}
+                </span>
             </td>
 
             <td>
@@ -1683,29 +1616,13 @@ function dibujarTabla(
                 ${escaparHTML(registro.microorganismo)}
             </td>
 
-            <td class="riesgo">
-                ${escaparHTML(registro.riesgo)}
-            </td>
-
-            <td>
-                ${escaparHTML(registro.tecnica)}
-            </td>
-
-            <td>
-                <span class="estado-alerta">
-                    ${escaparHTML(registro.cumplimiento)}
-                </span>
-            </td>
-
         `;
-
 
         tbody.appendChild(
             fila
         );
 
     }
-
 
     document.getElementById(
         "totalAlertas"
@@ -1714,10 +1631,6 @@ function dibujarTabla(
 
 }
 
-
-/* ============================================================
-   ESCAPAR HTML
-   ============================================================ */
 
 function escaparHTML(
     valor
@@ -1732,8 +1645,9 @@ function escaparHTML(
 
     }
 
-
-    return String(valor)
+    return String(
+        valor
+    )
 
         .replace(
             /&/g,
@@ -1763,10 +1677,6 @@ function escaparHTML(
 }
 
 
-/* ============================================================
-   BUSCADOR
-   ============================================================ */
-
 document
     .getElementById(
         "busqueda"
@@ -1780,11 +1690,14 @@ document
                     .toLowerCase()
                     .trim();
 
-
-            if (!texto) {
+            if (
+                !texto
+            ) {
 
                 datosFiltrados =
-                    [...datosFinales];
+                    [
+                        ...datosFinales
+                    ];
 
             } else {
 
@@ -1814,7 +1727,6 @@ document
 
             }
 
-
             dibujarTabla(
                 datosFiltrados
             );
@@ -1823,15 +1735,10 @@ document
     );
 
 
-/* ============================================================
-   EXPORTAR CSV
-   ============================================================ */
-
 function exportarCSV() {
 
     const datos =
         datosFiltrados;
-
 
     if (
         datos.length === 0
@@ -1844,7 +1751,6 @@ function exportarCSV() {
         return;
 
     }
-
 
     const encabezados = [
 
@@ -1860,6 +1766,12 @@ function exportarCSV() {
 
         "TIPO DE VISITA",
 
+        "TÉCNICA",
+
+        "NIVEL DE RIESGO",
+
+        "CUMPLIMIENTO",
+
         "MERCADOS Y FERIAS",
 
         "CETI-PETI",
@@ -1874,16 +1786,9 @@ function exportarCSV() {
 
         "ALIMENTO",
 
-        "MICROORGANISMO",
-
-        "NIVEL DE RIESGO",
-
-        "TÉCNICA",
-
-        "CUMPLIMIENTO"
+        "MICROORGANISMO"
 
     ];
-
 
     const filas =
         datos.map(
@@ -1901,6 +1806,12 @@ function exportarCSV() {
 
                 x.tipoVisita,
 
+                x.tecnica,
+
+                x.riesgo,
+
+                x.cumplimiento,
+
                 x.mercadosFerias,
 
                 x.cetiPeti,
@@ -1915,17 +1826,10 @@ function exportarCSV() {
 
                 x.alimento,
 
-                x.microorganismo,
-
-                x.riesgo,
-
-                x.tecnica,
-
-                x.cumplimiento
+                x.microorganismo
 
             ]
         );
-
 
     const contenido =
         [
@@ -1936,26 +1840,31 @@ function exportarCSV() {
 
             fila =>
 
-                fila.map(
+                fila
+                    .map(
 
-                    valor =>
+                        valor =>
 
-                        '"' +
-                        String(
-                            valor ?? ""
-                        )
-                        .replace(
-                            /"/g,
-                            '""'
-                        ) +
-                        '"'
+                            '"' +
+                            String(
+                                valor ??
+                                ""
+                            )
+                            .replace(
+                                /"/g,
+                                '""'
+                            ) +
+                            '"'
 
-                )
-                .join(";")
+                    )
+                    .join(
+                        ";"
+                    )
 
         )
-        .join("\n");
-
+        .join(
+            "\n"
+        );
 
     const blob =
         new Blob(
@@ -1969,99 +1878,78 @@ function exportarCSV() {
             }
         );
 
-
     const enlace =
         document.createElement(
             "a"
         );
-
 
     enlace.href =
         URL.createObjectURL(
             blob
         );
 
-
     enlace.download =
         "Alertas_Riesgo_Microbiologico_2026.csv";
 
-
-    document.body
-        .appendChild(
-            enlace
-        );
-
+    document.body.appendChild(
+        enlace
+    );
 
     enlace.click();
-
 
     enlace.remove();
 
 }
 
 
-/* ============================================================
-   CARGAR DATOS
-   ============================================================ */
-
 async function cargarDatos() {
 
     ocultarMensaje();
-
 
     document.getElementById(
         "cargando"
     ).style.display =
         "block";
 
-
     document.getElementById(
         "tablaAlertas"
     ).style.display =
         "none";
-
 
     try {
 
         const serviceURL =
             await obtenerURLServicio();
 
-
         const servicio =
             await obtenerEstructuraServicio(
                 serviceURL
             );
-
 
         const capaPadre =
             encontrarCapaPadre(
                 servicio
             );
 
-
         const tablaRepeat =
             encontrarTablaRepeat(
                 servicio
             );
-
 
         const capaURL =
             serviceURL +
             "/" +
             capaPadre.id;
 
-
         const tablaURL =
             serviceURL +
             "/" +
             tablaRepeat.id;
 
-
         const camposRepeat =
             await obtenerCamposTabla(
                 tablaURL
             );
-
 
         const campoParentGlobalId =
             encontrarCampo(
@@ -2074,7 +1962,6 @@ async function cargarDatos() {
                 ]
             );
 
-
         if (
             !campoParentGlobalId
         ) {
@@ -2085,12 +1972,10 @@ async function cargarDatos() {
 
         }
 
-
         const registrosRepeat =
             await obtenerNoCumple(
                 tablaURL
             );
-
 
         const parentIds =
             registrosRepeat
@@ -2109,13 +1994,11 @@ async function cargarDatos() {
                         x !== ""
                 );
 
-
         const mapaPadres =
             await obtenerPadres(
                 capaURL,
                 parentIds
             );
-
 
         datosFinales =
             construirDatosFinales(
@@ -2124,27 +2007,24 @@ async function cargarDatos() {
                 campoParentGlobalId
             );
 
-
         datosFiltrados =
-            [...datosFinales];
-
+            [
+                ...datosFinales
+            ];
 
         dibujarTabla(
             datosFiltrados
         );
-
 
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
 
-
         document.getElementById(
             "tablaAlertas"
         ).style.display =
             "table";
-
 
         if (
             datosFinales.length === 0
@@ -2157,7 +2037,6 @@ async function cargarDatos() {
 
         }
 
-
         document.getElementById(
             "ultimaActualizacion"
         ).textContent =
@@ -2169,7 +2048,6 @@ async function cargarDatos() {
                     "es-EC"
                 );
 
-
     } catch (
         error
     ) {
@@ -2178,12 +2056,10 @@ async function cargarDatos() {
             error
         );
 
-
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
-
 
         mostrarMensaje(
             "❌ " +
@@ -2196,10 +2072,6 @@ async function cargarDatos() {
 }
 
 
-/* ============================================================
-   AL ABRIR
-   ============================================================ */
-
 window.addEventListener(
     "load",
     function() {
@@ -2208,7 +2080,6 @@ window.addEventListener(
             sessionStorage.getItem(
                 "accesoAlertas"
             );
-
 
         if (
             acceso ===
@@ -2229,10 +2100,6 @@ window.addEventListener(
 );
 
 
-/* ============================================================
-   ACTUALIZAR CADA 5 MINUTOS
-   ============================================================ */
-
 setInterval(
     function() {
 
@@ -2240,7 +2107,6 @@ setInterval(
             sessionStorage.getItem(
                 "accesoAlertas"
             );
-
 
         if (
             acceso ===

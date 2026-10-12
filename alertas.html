@@ -103,7 +103,7 @@
 
     .contenedor {
         width: 100%;
-        max-width: 1700px;
+        max-width: 1900px;
         margin: auto;
     }
 
@@ -203,7 +203,9 @@
     table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 1300px;
+
+        /* aumentamos el ancho porque ahora hay más columnas */
+        min-width: 2200px;
     }
 
     thead {
@@ -213,10 +215,11 @@
 
     th,
     td {
-        padding: 10px;
+        padding: 9px;
         text-align: left;
         border-bottom: 1px solid #e0e0e0;
-        font-size: 13px;
+        font-size: 12px;
+        vertical-align: top;
     }
 
     th {
@@ -240,7 +243,7 @@
         white-space: nowrap;
     }
 
-    .riesgo-alto {
+    .riesgo {
         font-weight: bold;
         color: #b71c1c;
     }
@@ -283,9 +286,9 @@
 
 <body>
 
-<!-- ==========================
+<!-- ========================================================
      LOGIN
-     ========================== -->
+     ======================================================== -->
 
 <div id="loginScreen">
 
@@ -317,9 +320,9 @@
 </div>
 
 
-<!-- ==========================
+<!-- ========================================================
      CONTENIDO ALERTAS
-     ========================== -->
+     ======================================================== -->
 
 <div id="contenidoAlertas">
 
@@ -350,12 +353,13 @@
 
     </div>
 
+
     <div class="controles">
 
         <input
             type="text"
             id="busqueda"
-            placeholder="Buscar por cédula, técnica, administración, alimento, microorganismo..."
+            placeholder="Buscar por técnica, administración, establecimiento, alimento, microorganismo..."
         >
 
         <button
@@ -381,7 +385,9 @@
 
     </div>
 
+
     <div id="mensaje"></div>
+
 
     <div class="tabla-contenedor">
 
@@ -399,15 +405,67 @@
                 <tr>
 
                     <th>ALERTA</th>
-                    <th>FECHA MUESTRA</th>
-                    <th>ADMINISTRACIÓN ZONAL</th>
+
+                    <th>
+                        FECHA<br>
+                        MUESTRA
+                    </th>
+
+                    <th>
+                        ADMINISTRACIÓN<br>
+                        ZONAL
+                    </th>
+
                     <th>CÉDULA</th>
-                    <th>N.º PAPELETA</th>
-                    <th>TIPO DE VISITA</th>
+
+                    <th>
+                        N.º<br>
+                        PAPELETA
+                    </th>
+
+                    <th>
+                        TIPO DE<br>
+                        VISITA
+                    </th>
+
+                    <th>
+                        MERCADOS<br>
+                        Y FERIAS
+                    </th>
+
+                    <th>
+                        CETI - PETI
+                    </th>
+
+                    <th>
+                        CDI QUITO<br>
+                        WAWAS
+                    </th>
+
+                    <th>
+                        UEM
+                    </th>
+
+                    <th>
+                        CEMEI
+                    </th>
+
+                    <th>
+                        CENTRO<br>
+                        PATRONATO
+                    </th>
+
                     <th>ALIMENTO</th>
+
                     <th>MICROORGANISMO</th>
-                    <th>NIVEL DE RIESGO</th>
+
+                    <th>
+                        NIVEL DE<br>
+                        RIESGO
+                    </th>
+
                     <th>TÉCNICA</th>
+
                     <th>CUMPLIMIENTO</th>
 
                 </tr>
@@ -419,6 +477,7 @@
         </table>
 
     </div>
+
 
     <div
         class="ultimaActualizacion"
@@ -433,7 +492,7 @@
 <script>
 
 /* ============================================================
-   CONTRASEÑA INDEPENDIENTE
+   CONTRASEÑA
    ============================================================ */
 
 const PASSWORD_ALERTAS =
@@ -441,7 +500,7 @@ const PASSWORD_ALERTAS =
 
 
 /* ============================================================
-   VERIFICAR CONTRASEÑA
+   LOGIN
    ============================================================ */
 
 function verificarPassword() {
@@ -455,6 +514,7 @@ function verificarPassword() {
         document.getElementById(
             "mensajeError"
         );
+
 
     if (
         passwordIngresado ===
@@ -526,24 +586,25 @@ function cerrarSesion() {
    ENTER PARA INGRESAR
    ============================================================ */
 
-document.getElementById(
-    "password"
-)
-.addEventListener(
-    "keydown",
-    function(event) {
+document
+    .getElementById(
+        "password"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-        if (
-            event.key ===
-            "Enter"
-        ) {
+            if (
+                event.key ===
+                "Enter"
+            ) {
 
-            verificarPassword();
+                verificarPassword();
+
+            }
 
         }
-
-    }
-);
+    );
 
 
 /* ============================================================
@@ -581,8 +642,10 @@ function valorCampo(
         return "";
     }
 
+
     const claves =
         Object.keys(objeto);
+
 
     for (
         const nombre
@@ -596,10 +659,12 @@ function valorCampo(
                     nombre.toLowerCase()
             );
 
+
         if (encontrada) {
 
             const valor =
                 objeto[encontrada];
+
 
             if (
                 valor !== null &&
@@ -614,13 +679,14 @@ function valorCampo(
 
     }
 
+
     return "";
 
 }
 
 
 /* ============================================================
-   SOLO AÑO 2026
+   SOLO 2026
    ============================================================ */
 
 function esFecha2026(
@@ -637,8 +703,10 @@ function esFecha2026(
 
     }
 
+
     const fecha =
         new Date(valor);
+
 
     if (
         isNaN(
@@ -650,6 +718,7 @@ function esFecha2026(
 
     }
 
+
     const inicio =
         new Date(
             2026,
@@ -657,12 +726,14 @@ function esFecha2026(
             1
         );
 
+
     const fin =
         new Date(
             2027,
             0,
             1
         );
+
 
     return (
         fecha >= inicio &&
@@ -690,8 +761,10 @@ function fechaEspanol(
 
     }
 
+
     const fecha =
         new Date(valor);
+
 
     if (
         isNaN(
@@ -702,6 +775,7 @@ function fechaEspanol(
         return valor;
 
     }
+
 
     return new Intl.DateTimeFormat(
         "es-EC",
@@ -729,11 +803,14 @@ function mostrarMensaje(
             "mensaje"
         );
 
+
     div.textContent =
         texto;
 
+
     div.className =
         tipo;
+
 
     div.style.display =
         "block";
@@ -762,11 +839,14 @@ async function obtenerURLServicio() {
         ITEM_ID +
         "?f=json";
 
+
     const respuesta =
         await fetch(url);
 
+
     const item =
         await respuesta.json();
+
 
     if (item.error) {
 
@@ -777,6 +857,7 @@ async function obtenerURLServicio() {
 
     }
 
+
     if (!item.url) {
 
         throw new Error(
@@ -784,6 +865,7 @@ async function obtenerURLServicio() {
         );
 
     }
+
 
     return item.url.replace(
         /\/$/,
@@ -807,8 +889,10 @@ async function obtenerEstructuraServicio(
             "?f=json"
         );
 
+
     const servicio =
         await respuesta.json();
+
 
     if (
         servicio.error
@@ -819,6 +903,7 @@ async function obtenerEstructuraServicio(
         );
 
     }
+
 
     return servicio;
 
@@ -836,6 +921,7 @@ function encontrarTablaRepeat(
     const tablas =
         servicio.tables || [];
 
+
     let tabla =
         tablas.find(
             t =>
@@ -843,6 +929,7 @@ function encontrarTablaRepeat(
                 NOMBRE_TABLA_REPEAT
                     .toLowerCase()
         );
+
 
     if (!tabla) {
 
@@ -859,6 +946,7 @@ function encontrarTablaRepeat(
 
     }
 
+
     if (!tabla) {
 
         throw new Error(
@@ -867,6 +955,7 @@ function encontrarTablaRepeat(
         );
 
     }
+
 
     return tabla;
 
@@ -884,6 +973,7 @@ function encontrarCapaPadre(
     const capas =
         servicio.layers || [];
 
+
     if (
         capas.length === 0
     ) {
@@ -893,6 +983,7 @@ function encontrarCapaPadre(
         );
 
     }
+
 
     return capas[0];
 
@@ -911,6 +1002,7 @@ async function consultarArcGIS(
     const cuerpo =
         new URLSearchParams();
 
+
     Object.keys(
         parametros
     )
@@ -925,10 +1017,12 @@ async function consultarArcGIS(
         }
     );
 
+
     cuerpo.append(
         "f",
         "json"
     );
+
 
     const respuesta =
         await fetch(
@@ -946,8 +1040,10 @@ async function consultarArcGIS(
             }
         );
 
+
     const datos =
         await respuesta.json();
+
 
     if (
         datos.error
@@ -959,6 +1055,7 @@ async function consultarArcGIS(
         );
 
     }
+
 
     return datos;
 
@@ -975,11 +1072,14 @@ async function obtenerNoCumple(
 
     const todos = [];
 
+
     let offset =
         0;
 
+
     const cantidad =
         1000;
+
 
     while (true) {
 
@@ -1013,8 +1113,10 @@ async function obtenerNoCumple(
 
             );
 
+
         const registros =
             datos.features || [];
+
 
         const registros2026 =
             registros.filter(
@@ -1030,6 +1132,7 @@ async function obtenerNoCumple(
                             ]
                         );
 
+
                     return esFecha2026(
                         fecha
                     );
@@ -1037,9 +1140,11 @@ async function obtenerNoCumple(
                 }
             );
 
+
         todos.push(
             ...registros2026
         );
+
 
         if (
             registros.length <
@@ -1050,10 +1155,12 @@ async function obtenerNoCumple(
 
         }
 
+
         offset +=
             cantidad;
 
     }
+
 
     return todos;
 
@@ -1074,8 +1181,10 @@ async function obtenerCamposTabla(
             "?f=json"
         );
 
+
     const metadata =
         await respuesta.json();
+
 
     if (
         metadata.error
@@ -1086,6 +1195,7 @@ async function obtenerCamposTabla(
         );
 
     }
+
 
     return metadata.fields || [];
 
@@ -1113,6 +1223,7 @@ function encontrarCampo(
                     opcion.toLowerCase()
             );
 
+
         if (campo) {
 
             return campo.name;
@@ -1121,13 +1232,14 @@ function encontrarCampo(
 
     }
 
+
     return null;
 
 }
 
 
 /* ============================================================
-   REGISTROS PADRE
+   OBTENER PADRES
    ============================================================ */
 
 async function obtenerPadres(
@@ -1137,6 +1249,7 @@ async function obtenerPadres(
 
     const mapa = {};
 
+
     if (
         globalIds.length === 0
     ) {
@@ -1145,13 +1258,16 @@ async function obtenerPadres(
 
     }
 
+
     const idsUnicos =
         [...new Set(
             globalIds
         )];
 
+
     const TAMANO_BLOQUE =
         80;
+
 
     for (
         let i = 0;
@@ -1165,6 +1281,7 @@ async function obtenerPadres(
                 i +
                 TAMANO_BLOQUE
             );
+
 
         const listaSQL =
             bloque
@@ -1180,10 +1297,12 @@ async function obtenerPadres(
                 )
                 .join(",");
 
+
         const where =
             "GlobalID IN (" +
             listaSQL +
             ")";
+
 
         const resultado =
             await consultarArcGIS(
@@ -1206,6 +1325,7 @@ async function obtenerPadres(
 
             );
 
+
         for (
             const feature
             of resultado.features || []
@@ -1213,6 +1333,7 @@ async function obtenerPadres(
 
             const attrs =
                 feature.attributes;
+
 
             const globalid =
                 valorCampo(
@@ -1222,6 +1343,7 @@ async function obtenerPadres(
                         "globalid"
                     ]
                 );
+
 
             if (globalid) {
 
@@ -1237,6 +1359,7 @@ async function obtenerPadres(
         }
 
     }
+
 
     return mapa;
 
@@ -1255,6 +1378,7 @@ function construirDatosFinales(
 
     const resultado = [];
 
+
     for (
         const feature
         of registrosRepeat
@@ -1263,10 +1387,12 @@ function construirDatosFinales(
         const repetido =
             feature.attributes;
 
+
         const parentId =
             repetido[
                 campoParentGlobalId
             ];
+
 
         const padre =
             mapaPadres[
@@ -1276,10 +1402,12 @@ function construirDatosFinales(
                 .toLowerCase()
             ] || {};
 
+
         resultado.push({
 
             alerta:
                 "REQUIERE SEGUIMIENTO",
+
 
             fechaMuestra:
                 fechaEspanol(
@@ -1293,6 +1421,7 @@ function construirDatosFinales(
                     )
                 ),
 
+
             administracion:
                 valorCampo(
                     padre,
@@ -1302,6 +1431,7 @@ function construirDatosFinales(
                         "administracion_zonal"
                     ]
                 ),
+
 
             cedula:
                 valorCampo(
@@ -1313,6 +1443,7 @@ function construirDatosFinales(
                     ]
                 ),
 
+
             tecnica:
                 valorCampo(
                     padre,
@@ -1322,6 +1453,76 @@ function construirDatosFinales(
                         "tecnica"
                     ]
                 ),
+
+
+            /* =============================================
+               NUEVOS CAMPOS DEL FEATURE PRINCIPAL
+               ============================================= */
+
+            mercadosFerias:
+                valorCampo(
+                    padre,
+                    [
+                        "Mercados_y_Ferias",
+                        "mercados_y_ferias"
+                    ]
+                ),
+
+
+            cetiPeti:
+                valorCampo(
+                    padre,
+                    [
+                        "CETI_PETI",
+                        "ceti_peti"
+                    ]
+                ),
+
+
+            cdiQuitoWawas:
+                valorCampo(
+                    padre,
+                    [
+                        "CDI_Quito_wawas",
+                        "cdi_quito_wawas"
+                    ]
+                ),
+
+
+            uem:
+                valorCampo(
+                    padre,
+                    [
+                        "UEM",
+                        "uem"
+                    ]
+                ),
+
+
+            cmei:
+                valorCampo(
+                    padre,
+                    [
+                        "CMEI",
+                        "cmei"
+                    ]
+                ),
+
+
+            centroPatronato:
+                valorCampo(
+                    padre,
+                    [
+                        "centro_patronato",
+                        "CENTRO_PATRONATO",
+                        "Centro_patronato"
+                    ]
+                ),
+
+
+            /* =============================================
+               CAMPOS DEL REPEAT
+               ============================================= */
 
             papeleta:
                 valorCampo(
@@ -1333,6 +1534,7 @@ function construirDatosFinales(
                     ]
                 ),
 
+
             tipoVisita:
                 valorCampo(
                     repetido,
@@ -1341,6 +1543,7 @@ function construirDatosFinales(
                         "tipo_visita"
                     ]
                 ),
+
 
             alimento:
                 valorCampo(
@@ -1351,6 +1554,7 @@ function construirDatosFinales(
                     ]
                 ),
 
+
             microorganismo:
                 valorCampo(
                     repetido,
@@ -1360,6 +1564,7 @@ function construirDatosFinales(
                     ]
                 ),
 
+
             riesgo:
                 valorCampo(
                     repetido,
@@ -1368,6 +1573,7 @@ function construirDatosFinales(
                         "riesgo"
                     ]
                 ),
+
 
             cumplimiento:
                 valorCampo(
@@ -1381,6 +1587,7 @@ function construirDatosFinales(
         });
 
     }
+
 
     return resultado;
 
@@ -1400,8 +1607,10 @@ function dibujarTabla(
             "cuerpoTabla"
         );
 
+
     tbody.innerHTML =
         "";
+
 
     for (
         const registro
@@ -1412,6 +1621,7 @@ function dibujarTabla(
             document.createElement(
                 "tr"
             );
+
 
         fila.innerHTML = `
 
@@ -1442,6 +1652,30 @@ function dibujarTabla(
             </td>
 
             <td>
+                ${escaparHTML(registro.mercadosFerias)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.cetiPeti)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.cdiQuitoWawas)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.uem)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.cmei)}
+            </td>
+
+            <td>
+                ${escaparHTML(registro.centroPatronato)}
+            </td>
+
+            <td>
                 ${escaparHTML(registro.alimento)}
             </td>
 
@@ -1449,7 +1683,7 @@ function dibujarTabla(
                 ${escaparHTML(registro.microorganismo)}
             </td>
 
-            <td class="riesgo-alto">
+            <td class="riesgo">
                 ${escaparHTML(registro.riesgo)}
             </td>
 
@@ -1465,11 +1699,13 @@ function dibujarTabla(
 
         `;
 
+
         tbody.appendChild(
             fila
         );
 
     }
+
 
     document.getElementById(
         "totalAlertas"
@@ -1496,17 +1732,33 @@ function escaparHTML(
 
     }
 
+
     return String(valor)
 
-        .replace(/&/g, "&amp;")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
 
-        .replace(/</g, "&lt;")
+        .replace(
+            /</g,
+            "&lt;"
+        )
 
-        .replace(/>/g, "&gt;")
+        .replace(
+            />/g,
+            "&gt;"
+        )
 
-        .replace(/"/g, "&quot;")
+        .replace(
+            /"/g,
+            "&quot;"
+        )
 
-        .replace(/'/g, "&#039;");
+        .replace(
+            /'/g,
+            "&#039;"
+        );
 
 }
 
@@ -1527,6 +1779,7 @@ document
                 this.value
                     .toLowerCase()
                     .trim();
+
 
             if (!texto) {
 
@@ -1561,6 +1814,7 @@ document
 
             }
 
+
             dibujarTabla(
                 datosFiltrados
             );
@@ -1578,6 +1832,7 @@ function exportarCSV() {
     const datos =
         datosFiltrados;
 
+
     if (
         datos.length === 0
     ) {
@@ -1590,40 +1845,87 @@ function exportarCSV() {
 
     }
 
+
     const encabezados = [
 
         "ALERTA",
+
         "FECHA MUESTRA",
+
         "ADMINISTRACIÓN ZONAL",
+
         "CÉDULA",
+
         "N.º PAPELETA",
+
         "TIPO DE VISITA",
+
+        "MERCADOS Y FERIAS",
+
+        "CETI-PETI",
+
+        "CDI QUITO WAWAS",
+
+        "UEM",
+
+        "CEMEI",
+
+        "CENTRO PATRONATO",
+
         "ALIMENTO",
+
         "MICROORGANISMO",
+
         "NIVEL DE RIESGO",
+
         "TÉCNICA",
+
         "CUMPLIMIENTO"
 
     ];
+
 
     const filas =
         datos.map(
             x => [
 
                 x.alerta,
+
                 x.fechaMuestra,
+
                 x.administracion,
+
                 x.cedula,
+
                 x.papeleta,
+
                 x.tipoVisita,
+
+                x.mercadosFerias,
+
+                x.cetiPeti,
+
+                x.cdiQuitoWawas,
+
+                x.uem,
+
+                x.cmei,
+
+                x.centroPatronato,
+
                 x.alimento,
+
                 x.microorganismo,
+
                 x.riesgo,
+
                 x.tecnica,
+
                 x.cumplimiento
 
             ]
         );
+
 
     const contenido =
         [
@@ -1654,6 +1956,7 @@ function exportarCSV() {
         )
         .join("\n");
 
+
     const blob =
         new Blob(
             [
@@ -1666,25 +1969,31 @@ function exportarCSV() {
             }
         );
 
+
     const enlace =
         document.createElement(
             "a"
         );
+
 
     enlace.href =
         URL.createObjectURL(
             blob
         );
 
+
     enlace.download =
         "Alertas_Riesgo_Microbiologico_2026.csv";
+
 
     document.body
         .appendChild(
             enlace
         );
 
+
     enlace.click();
+
 
     enlace.remove();
 
@@ -1699,50 +2008,60 @@ async function cargarDatos() {
 
     ocultarMensaje();
 
+
     document.getElementById(
         "cargando"
     ).style.display =
         "block";
+
 
     document.getElementById(
         "tablaAlertas"
     ).style.display =
         "none";
 
+
     try {
 
         const serviceURL =
             await obtenerURLServicio();
+
 
         const servicio =
             await obtenerEstructuraServicio(
                 serviceURL
             );
 
+
         const capaPadre =
             encontrarCapaPadre(
                 servicio
             );
+
 
         const tablaRepeat =
             encontrarTablaRepeat(
                 servicio
             );
 
+
         const capaURL =
             serviceURL +
             "/" +
             capaPadre.id;
+
 
         const tablaURL =
             serviceURL +
             "/" +
             tablaRepeat.id;
 
+
         const camposRepeat =
             await obtenerCamposTabla(
                 tablaURL
             );
+
 
         const campoParentGlobalId =
             encontrarCampo(
@@ -1755,6 +2074,7 @@ async function cargarDatos() {
                 ]
             );
 
+
         if (
             !campoParentGlobalId
         ) {
@@ -1765,10 +2085,12 @@ async function cargarDatos() {
 
         }
 
+
         const registrosRepeat =
             await obtenerNoCumple(
                 tablaURL
             );
+
 
         const parentIds =
             registrosRepeat
@@ -1787,11 +2109,13 @@ async function cargarDatos() {
                         x !== ""
                 );
 
+
         const mapaPadres =
             await obtenerPadres(
                 capaURL,
                 parentIds
             );
+
 
         datosFinales =
             construirDatosFinales(
@@ -1800,22 +2124,27 @@ async function cargarDatos() {
                 campoParentGlobalId
             );
 
+
         datosFiltrados =
             [...datosFinales];
+
 
         dibujarTabla(
             datosFiltrados
         );
+
 
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
 
+
         document.getElementById(
             "tablaAlertas"
         ).style.display =
             "table";
+
 
         if (
             datosFinales.length === 0
@@ -1828,6 +2157,7 @@ async function cargarDatos() {
 
         }
 
+
         document.getElementById(
             "ultimaActualizacion"
         ).textContent =
@@ -1839,6 +2169,7 @@ async function cargarDatos() {
                     "es-EC"
                 );
 
+
     } catch (
         error
     ) {
@@ -1847,10 +2178,12 @@ async function cargarDatos() {
             error
         );
 
+
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
+
 
         mostrarMensaje(
             "❌ " +
@@ -1864,7 +2197,7 @@ async function cargarDatos() {
 
 
 /* ============================================================
-   AL ABRIR LA PÁGINA
+   AL ABRIR
    ============================================================ */
 
 window.addEventListener(
@@ -1875,6 +2208,7 @@ window.addEventListener(
             sessionStorage.getItem(
                 "accesoAlertas"
             );
+
 
         if (
             acceso ===
@@ -1907,6 +2241,7 @@ setInterval(
                 "accesoAlertas"
             );
 
+
         if (
             acceso ===
             "autorizado"
@@ -1917,6 +2252,7 @@ setInterval(
         }
 
     },
+
     300000
 );
 

@@ -20,10 +20,85 @@
 
     body {
         margin: 0;
-        padding: 20px;
         font-family: Arial, Helvetica, sans-serif;
         background: #f4f6f8;
         color: #263238;
+    }
+
+    /* ==========================
+       LOGIN
+       ========================== */
+
+    #loginScreen {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(
+            135deg,
+            #eef3f7,
+            #dfe8ee
+        );
+    }
+
+    .loginBox {
+        width: 90%;
+        max-width: 420px;
+        background: white;
+        padding: 40px;
+        border-radius: 14px;
+        box-shadow: 0 6px 25px rgba(0,0,0,0.15);
+        text-align: center;
+    }
+
+    .loginBox h1 {
+        margin-top: 0;
+        font-size: 24px;
+        color: #1f4e78;
+    }
+
+    .loginBox p {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    .loginBox input {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 7px;
+        outline: none;
+        margin-bottom: 15px;
+    }
+
+    .loginBox button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 7px;
+        background: #1f78b4;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    #mensajeError {
+        display: none;
+        margin-top: 15px;
+        color: #c62828;
+        font-weight: bold;
+    }
+
+    /* ==========================
+       CONTENIDO
+       ========================== */
+
+    #contenidoAlertas {
+        display: none;
+        padding: 20px;
     }
 
     .contenedor {
@@ -208,6 +283,46 @@
 
 <body>
 
+<!-- ==========================
+     LOGIN
+     ========================== -->
+
+<div id="loginScreen">
+
+    <div class="loginBox">
+
+        <h1>Alertas de Riesgo Microbiológico</h1>
+
+        <p>
+            Ingrese la contraseña para acceder
+        </p>
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Contraseña"
+            autocomplete="off"
+        >
+
+        <button onclick="verificarPassword()">
+            Ingresar
+        </button>
+
+        <div id="mensajeError">
+            Contraseña incorrecta
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ==========================
+     CONTENIDO ALERTAS
+     ========================== -->
+
+<div id="contenidoAlertas">
+
 <div class="contenedor">
 
     <h1>🚨 Alertas de Riesgo Microbiológico</h1>
@@ -312,22 +427,82 @@
 
 </div>
 
+</div>
+
 
 <script>
 
 /* ============================================================
-   VERIFICAR SESIÓN
+   CONTRASEÑA INDEPENDIENTE
    ============================================================ */
 
-const acceso =
-    sessionStorage.getItem(
-        "accesoInocuidad"
-    );
+const PASSWORD_ALERTAS =
+    "alertas2026";
 
-if (acceso !== "autorizado") {
 
-    window.location.href =
-        "index.html";
+/* ============================================================
+   VERIFICAR CONTRASEÑA
+   ============================================================ */
+
+function verificarPassword() {
+
+    const passwordIngresado =
+        document.getElementById(
+            "password"
+        ).value;
+
+    const mensajeError =
+        document.getElementById(
+            "mensajeError"
+        );
+
+    if (
+        passwordIngresado ===
+        PASSWORD_ALERTAS
+    ) {
+
+        sessionStorage.setItem(
+            "accesoAlertas",
+            "autorizado"
+        );
+
+        mostrarAlertas();
+
+    } else {
+
+        mensajeError.style.display =
+            "block";
+
+        document.getElementById(
+            "password"
+        ).value = "";
+
+        document.getElementById(
+            "password"
+        ).focus();
+
+    }
+
+}
+
+
+/* ============================================================
+   MOSTRAR ALERTAS
+   ============================================================ */
+
+function mostrarAlertas() {
+
+    document.getElementById(
+        "loginScreen"
+    ).style.display =
+        "none";
+
+    document.getElementById(
+        "contenidoAlertas"
+    ).style.display =
+        "block";
+
+    cargarDatos();
 
 }
 
@@ -339,17 +514,40 @@ if (acceso !== "autorizado") {
 function cerrarSesion() {
 
     sessionStorage.removeItem(
-        "accesoInocuidad"
+        "accesoAlertas"
     );
 
-    window.location.href =
-        "index.html";
+    location.reload();
 
 }
 
 
 /* ============================================================
-   CONFIGURACIÓN
+   ENTER PARA INGRESAR
+   ============================================================ */
+
+document.getElementById(
+    "password"
+)
+.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+            verificarPassword();
+
+        }
+
+    }
+);
+
+
+/* ============================================================
+   CONFIGURACIÓN ARCGIS
    ============================================================ */
 
 const ITEM_ID =
@@ -365,17 +563,13 @@ const VALOR_ALERTA =
     "NO CUMPLE";
 
 
-/* ============================================================
-   VARIABLES GLOBALES
-   ============================================================ */
-
 let datosFinales = [];
 
 let datosFiltrados = [];
 
 
 /* ============================================================
-   BUSCAR CAMPO SIN IMPORTAR MAYÚSCULAS
+   BUSCAR CAMPO
    ============================================================ */
 
 function valorCampo(
@@ -426,17 +620,21 @@ function valorCampo(
 
 
 /* ============================================================
-   VALIDAR SI LA FECHA CORRESPONDE A 2026
+   SOLO AÑO 2026
    ============================================================ */
 
-function esFecha2026(valor) {
+function esFecha2026(
+    valor
+) {
 
     if (
         valor === null ||
         valor === undefined ||
         valor === ""
     ) {
+
         return false;
+
     }
 
     const fecha =
@@ -447,29 +645,23 @@ function esFecha2026(valor) {
             fecha.getTime()
         )
     ) {
+
         return false;
+
     }
 
     const inicio =
         new Date(
             2026,
             0,
-            1,
-            0,
-            0,
-            0,
-            0
+            1
         );
 
     const fin =
         new Date(
             2027,
             0,
-            1,
-            0,
-            0,
-            0,
-            0
+            1
         );
 
     return (
@@ -484,14 +676,18 @@ function esFecha2026(valor) {
    FORMATEAR FECHA
    ============================================================ */
 
-function fechaEspanol(valor) {
+function fechaEspanol(
+    valor
+) {
 
     if (
         valor === null ||
         valor === undefined ||
         valor === ""
     ) {
+
         return "";
+
     }
 
     const fecha =
@@ -556,7 +752,7 @@ function ocultarMensaje() {
 
 
 /* ============================================================
-   OBTENER URL FEATURE SERVICE
+   URL FEATURE SERVICE
    ============================================================ */
 
 async function obtenerURLServicio() {
@@ -630,7 +826,7 @@ async function obtenerEstructuraServicio(
 
 
 /* ============================================================
-   ENCONTRAR TABLA REPEAT
+   TABLA REPEAT
    ============================================================ */
 
 function encontrarTablaRepeat(
@@ -678,7 +874,7 @@ function encontrarTablaRepeat(
 
 
 /* ============================================================
-   ENCONTRAR CAPA PADRE
+   CAPA PADRE
    ============================================================ */
 
 function encontrarCapaPadre(
@@ -757,10 +953,6 @@ async function consultarArcGIS(
         datos.error
     ) {
 
-        console.error(
-            datos.error
-        );
-
         throw new Error(
             datos.error.message ||
             "Error en la consulta de ArcGIS."
@@ -774,7 +966,7 @@ async function consultarArcGIS(
 
 
 /* ============================================================
-   OBTENER NO CUMPLE + SOLO AÑO 2026
+   NO CUMPLE DEL 2026
    ============================================================ */
 
 async function obtenerNoCumple(
@@ -824,11 +1016,6 @@ async function obtenerNoCumple(
         const registros =
             datos.features || [];
 
-
-        /* ==============================================
-           FILTRO EXACTO DEL AÑO 2026
-           ============================================== */
-
         const registros2026 =
             registros.filter(
                 feature => {
@@ -850,18 +1037,9 @@ async function obtenerNoCumple(
                 }
             );
 
-
         todos.push(
             ...registros2026
         );
-
-
-        /*
-           IMPORTANTE:
-           Esta condición usa el número ORIGINAL
-           de registros retornados por ArcGIS,
-           no los registros después del filtro 2026.
-        */
 
         if (
             registros.length <
@@ -883,7 +1061,7 @@ async function obtenerNoCumple(
 
 
 /* ============================================================
-   CAMPOS DE LA TABLA
+   CAMPOS TABLA
    ============================================================ */
 
 async function obtenerCamposTabla(
@@ -949,7 +1127,7 @@ function encontrarCampo(
 
 
 /* ============================================================
-   OBTENER REGISTROS PADRE
+   REGISTROS PADRE
    ============================================================ */
 
 async function obtenerPadres(
@@ -1066,7 +1244,7 @@ async function obtenerPadres(
 
 
 /* ============================================================
-   CONSTRUIR DATOS FINALES
+   CONSTRUIR DATOS
    ============================================================ */
 
 function construirDatosFinales(
@@ -1098,16 +1276,10 @@ function construirDatosFinales(
                 .toLowerCase()
             ] || {};
 
-
         resultado.push({
 
             alerta:
                 "REQUIERE SEGUIMIENTO",
-
-
-            /* =============================
-               FECHA DENTRO DEL REPEAT
-               ============================= */
 
             fechaMuestra:
                 fechaEspanol(
@@ -1121,11 +1293,6 @@ function construirDatosFinales(
                     )
                 ),
 
-
-            /* =============================
-               CAPA PRINCIPAL
-               ============================= */
-
             administracion:
                 valorCampo(
                     padre,
@@ -1135,7 +1302,6 @@ function construirDatosFinales(
                         "administracion_zonal"
                     ]
                 ),
-
 
             cedula:
                 valorCampo(
@@ -1147,7 +1313,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             tecnica:
                 valorCampo(
                     padre,
@@ -1157,11 +1322,6 @@ function construirDatosFinales(
                         "tecnica"
                     ]
                 ),
-
-
-            /* =============================
-               CAMPOS DEL REPEAT
-               ============================= */
 
             papeleta:
                 valorCampo(
@@ -1173,7 +1333,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             tipoVisita:
                 valorCampo(
                     repetido,
@@ -1182,7 +1341,6 @@ function construirDatosFinales(
                         "tipo_visita"
                     ]
                 ),
-
 
             alimento:
                 valorCampo(
@@ -1193,7 +1351,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             microorganismo:
                 valorCampo(
                     repetido,
@@ -1203,7 +1360,6 @@ function construirDatosFinales(
                     ]
                 ),
 
-
             riesgo:
                 valorCampo(
                     repetido,
@@ -1212,7 +1368,6 @@ function construirDatosFinales(
                         "riesgo"
                     ]
                 ),
-
 
             cumplimiento:
                 valorCampo(
@@ -1343,30 +1498,15 @@ function escaparHTML(
 
     return String(valor)
 
-        .replace(
-            /&/g,
-            "&amp;"
-        )
+        .replace(/&/g, "&amp;")
 
-        .replace(
-            /</g,
-            "&lt;"
-        )
+        .replace(/</g, "&lt;")
 
-        .replace(
-            />/g,
-            "&gt;"
-        )
+        .replace(/>/g, "&gt;")
 
-        .replace(
-            /"/g,
-            "&quot;"
-        )
+        .replace(/"/g, "&quot;")
 
-        .replace(
-            /'/g,
-            "&#039;"
-        );
+        .replace(/'/g, "&#039;");
 
 }
 
@@ -1453,59 +1593,37 @@ function exportarCSV() {
     const encabezados = [
 
         "ALERTA",
-
         "FECHA MUESTRA",
-
         "ADMINISTRACIÓN ZONAL",
-
         "CÉDULA",
-
         "N.º PAPELETA",
-
         "TIPO DE VISITA",
-
         "ALIMENTO",
-
         "MICROORGANISMO",
-
         "NIVEL DE RIESGO",
-
         "TÉCNICA",
-
         "CUMPLIMIENTO"
 
     ];
-
 
     const filas =
         datos.map(
             x => [
 
                 x.alerta,
-
                 x.fechaMuestra,
-
                 x.administracion,
-
                 x.cedula,
-
                 x.papeleta,
-
                 x.tipoVisita,
-
                 x.alimento,
-
                 x.microorganismo,
-
                 x.riesgo,
-
                 x.tecnica,
-
                 x.cumplimiento
 
             ]
         );
-
 
     const contenido =
         [
@@ -1536,7 +1654,6 @@ function exportarCSV() {
         )
         .join("\n");
 
-
     const blob =
         new Blob(
             [
@@ -1549,31 +1666,25 @@ function exportarCSV() {
             }
         );
 
-
     const enlace =
         document.createElement(
             "a"
         );
-
 
     enlace.href =
         URL.createObjectURL(
             blob
         );
 
-
     enlace.download =
         "Alertas_Riesgo_Microbiologico_2026.csv";
-
 
     document.body
         .appendChild(
             enlace
         );
 
-
     enlace.click();
-
 
     enlace.remove();
 
@@ -1581,67 +1692,57 @@ function exportarCSV() {
 
 
 /* ============================================================
-   CARGA PRINCIPAL
+   CARGAR DATOS
    ============================================================ */
 
 async function cargarDatos() {
 
     ocultarMensaje();
 
-
     document.getElementById(
         "cargando"
     ).style.display =
         "block";
-
 
     document.getElementById(
         "tablaAlertas"
     ).style.display =
         "none";
 
-
     try {
 
         const serviceURL =
             await obtenerURLServicio();
-
 
         const servicio =
             await obtenerEstructuraServicio(
                 serviceURL
             );
 
-
         const capaPadre =
             encontrarCapaPadre(
                 servicio
             );
-
 
         const tablaRepeat =
             encontrarTablaRepeat(
                 servicio
             );
 
-
         const capaURL =
             serviceURL +
             "/" +
             capaPadre.id;
-
 
         const tablaURL =
             serviceURL +
             "/" +
             tablaRepeat.id;
 
-
         const camposRepeat =
             await obtenerCamposTabla(
                 tablaURL
             );
-
 
         const campoParentGlobalId =
             encontrarCampo(
@@ -1654,7 +1755,6 @@ async function cargarDatos() {
                 ]
             );
 
-
         if (
             !campoParentGlobalId
         ) {
@@ -1665,20 +1765,10 @@ async function cargarDatos() {
 
         }
 
-
-        /* ===========================================
-           SOLO NO CUMPLE DEL AÑO 2026
-           =========================================== */
-
         const registrosRepeat =
             await obtenerNoCumple(
                 tablaURL
             );
-
-
-        /* ===========================================
-           OBTENER IDS DE LOS PADRES
-           =========================================== */
 
         const parentIds =
             registrosRepeat
@@ -1697,21 +1787,11 @@ async function cargarDatos() {
                         x !== ""
                 );
 
-
-        /* ===========================================
-           CONSULTAR CAPA PRINCIPAL
-           =========================================== */
-
         const mapaPadres =
             await obtenerPadres(
                 capaURL,
                 parentIds
             );
-
-
-        /* ===========================================
-           UNIR PADRE + REPEAT
-           =========================================== */
 
         datosFinales =
             construirDatosFinales(
@@ -1720,31 +1800,22 @@ async function cargarDatos() {
                 campoParentGlobalId
             );
 
-
         datosFiltrados =
             [...datosFinales];
-
-
-        /* ===========================================
-           MOSTRAR
-           =========================================== */
 
         dibujarTabla(
             datosFiltrados
         );
-
 
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
 
-
         document.getElementById(
             "tablaAlertas"
         ).style.display =
             "table";
-
 
         if (
             datosFinales.length === 0
@@ -1757,7 +1828,6 @@ async function cargarDatos() {
 
         }
 
-
         document.getElementById(
             "ultimaActualizacion"
         ).textContent =
@@ -1769,7 +1839,6 @@ async function cargarDatos() {
                     "es-EC"
                 );
 
-
     } catch (
         error
     ) {
@@ -1778,12 +1847,10 @@ async function cargarDatos() {
             error
         );
 
-
         document.getElementById(
             "cargando"
         ).style.display =
             "none";
-
 
         mostrarMensaje(
             "❌ " +
@@ -1797,21 +1864,59 @@ async function cargarDatos() {
 
 
 /* ============================================================
-   EJECUTAR AL ABRIR
+   AL ABRIR LA PÁGINA
    ============================================================ */
 
 window.addEventListener(
     "load",
-    cargarDatos
+    function() {
+
+        const acceso =
+            sessionStorage.getItem(
+                "accesoAlertas"
+            );
+
+        if (
+            acceso ===
+            "autorizado"
+        ) {
+
+            mostrarAlertas();
+
+        } else {
+
+            document.getElementById(
+                "password"
+            ).focus();
+
+        }
+
+    }
 );
 
 
 /* ============================================================
-   ACTUALIZACIÓN AUTOMÁTICA CADA 5 MINUTOS
+   ACTUALIZAR CADA 5 MINUTOS
    ============================================================ */
 
 setInterval(
-    cargarDatos,
+    function() {
+
+        const acceso =
+            sessionStorage.getItem(
+                "accesoAlertas"
+            );
+
+        if (
+            acceso ===
+            "autorizado"
+        ) {
+
+            cargarDatos();
+
+        }
+
+    },
     300000
 );
 
